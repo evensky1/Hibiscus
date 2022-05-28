@@ -1,6 +1,8 @@
 package com.poit.hibiscus.service.impl;
 
 import com.poit.hibiscus.entity.Card;
+import com.poit.hibiscus.error.factory.configuration.HandleError;
+import com.poit.hibiscus.error.factory.model.CardException;
 import com.poit.hibiscus.repository.CardRepository;
 import com.poit.hibiscus.service.CardService;
 import java.util.List;
@@ -31,7 +33,14 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
+    @HandleError
     public List<Card> getUserAttachedCards(Long id) {
-        return cardRepository.getAllByUserId(id);
+        var cards = cardRepository.getAllByUserId(id);
+
+        if(cards == null) {
+            throw new CardException("No card attached to card");
+        }
+
+        return cards;
     }
 }

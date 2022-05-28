@@ -2,6 +2,9 @@ package com.poit.hibiscus.service.impl;
 
 import com.poit.hibiscus.entity.Passport;
 import com.poit.hibiscus.entity.User;
+import com.poit.hibiscus.error.factory.configuration.HandleError;
+import com.poit.hibiscus.error.factory.model.SignInException;
+import com.poit.hibiscus.error.factory.model.SignUpException;
 import com.poit.hibiscus.repository.UserRepository;
 import com.poit.hibiscus.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +18,11 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
+    @HandleError
     public void saveUser(User user) {
+        if(userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new SignUpException("Current email already exists in database");
+        }
         userRepository.save(user);
     }
 
@@ -26,12 +33,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findById(id)
+            .orElseThrow(() -> new SignInException("Email not found"));
     }
 
     @Override
+    @HandleError
     public User findUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElse(null);
+        return userRepository.findByEmail(email)
+            .orElseThrow(() -> new SignInException("Email not found"));
     }
 
     @Override
