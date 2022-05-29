@@ -28,6 +28,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .csrf()
                 .disable()
+            .requiresChannel(channel ->
+                channel.anyRequest().requiresSecure())
             .authorizeRequests()
                 .antMatchers(HttpMethod.POST,"/api/v1/account/signup").anonymous()
                 .antMatchers(HttpMethod.GET,"/signup", "/signin", "/fail-login").anonymous()
