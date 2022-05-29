@@ -245,6 +245,30 @@ function sendMoneyFromAccount() {
   }
 }
 
+function showExRates() {
+  let holder = document.querySelector(".rate-holder");
+  holder.innerHTML = "";
+  fetch('api/v1/currency')
+  .then(response => response.json())
+  .then(json => {
+    let header = document.createElement('h2');
+    header.innerHTML = "Exchange rates on " + json.updatedAt.substring(0, 10);
+    holder.append(header);
+
+    let text = document.createElement('p');
+    text.innerHTML = "USD/EUR: " + json.quotes.USDEUR;
+    holder.append(text);
+
+    text = document.createElement('p');
+    text.innerHTML = "USD/BYN: " + json.quotes.USDBYN;
+    holder.append(text);
+
+    text = document.createElement('p');
+    text.innerHTML = "USD/RUB: " + json.quotes.USDRUB;
+    holder.append(text);
+  });
+}
+
 function sendMoneyFromCard() {
   const data = {};
   if (targetCard) {
@@ -258,7 +282,7 @@ function sendMoneyFromCard() {
       headers: {
         'Content-Type': 'application/json'
       }
-    }).then(r => r.json()); // then и погнал чекать ошибки
+    }).then(responce => r.json()); // then и погнал чекать ошибки
   } else {
     alert('Please, choose a card');
   }
@@ -282,3 +306,5 @@ document.querySelector("#create-account-button").addEventListener('click',
     createAccount);
 document.querySelector("#create-card-button").addEventListener('click',
     createCard);
+
+showExRates();

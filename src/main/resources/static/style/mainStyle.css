@@ -1,8 +1,5 @@
 body {
   background: #76b852;
-  background: -webkit-linear-gradient(to top, #76B852, #8DC26F);
-  background: -moz-linear-gradient(to top, #76B852, #8DC26F);
-  background: -o-linear-gradient(to top, #76B852, #8DC26F);
   background: linear-gradient(to top, #76B852, #8DC26F);
   background-size: cover;
   background-attachment: fixed;
@@ -14,6 +11,16 @@ h1 {
   text-align: center;
   color: #ffffff;
   font-weight: 100;
+  text-transform: capitalize;
+  letter-spacing: 4px;
+  font-family: 'Roboto', sans-serif;
+}
+
+h2 {
+  font-size: 2.5em;
+  text-align: center;
+  color: #000000;
+  font-weight: 1;
   text-transform: capitalize;
   letter-spacing: 4px;
   font-family: 'Roboto', sans-serif;
@@ -316,4 +323,21 @@ input[type=text] {
   text-transform: capitalize;
   letter-spacing: 1px;
   font-family: 'Roboto', sans-serif;
+}
+
+.rate-holder {
+  margin: auto auto 20px;
+  background: linear-gradient(to bottom, #f5f5dc, #f5f5ee);
+  display: block;
+  position: relative;
+  border-radius: 20px;
+  overflow: auto;
+  width: 45vw;
+  height: 45vh;
+  min-width: 30vw;
+  min-height: 20vh;
+}
+
+.rate-holder h2 {
+  margin-bottom: 50px;
 }

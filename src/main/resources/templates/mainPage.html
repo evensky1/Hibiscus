@@ -15,7 +15,7 @@
     <li><a class="menu-link" href="#cards">Cards</a></li>
     <li><a class="menu-link" href="#accounts">Accounts</a></li>
     <li><a class="menu-link" href="#credits">Credits</a></li>
-    <li><a class="menu-link" href="#holdings">Holdings</a></li>
+    <li><a class="menu-link" href="#exchanges">Exchange rates</a></li>
     <li><a class="menu-link" href="#transactions">Transactions</a></li>
   </ul>
 </header>
@@ -129,7 +129,13 @@
       <h1 id="credits">Credits</h1>
     </div>
     <div class="panel">
-      <h1 id="holdings">Holdings</h1>
+      <h1 id="exchanges">Exchange rates</h1>
+      <div class="rate-holder">
+        <h2>Exchange rates on 2022-05-29</h2>
+        <p>USD/EUR: 0.931505</p>
+        <p>USD/BYN: 3.371429</p>
+        <p>USD/RUB: 65.750104</p>
+      </div>
     </div>
     <div class="panel">
       <h1 id="transactions">Transactions</h1>
@@ -140,12 +146,12 @@
         </div>
         <div class="info-wrapper">
         <div class="send-money-to-account">
-          <input type="text" id="dest-account-num" placeholder="Account number">
+          <input type="text" id="dest-account-num" placeholder="Account number" pattern="\d{16}">
           <button id="send-to-account-button">SENDTOACCOUNT</button>
         </div>
         <div class="send-money-to-card">
-          <input type="text" id="dest-card-num" placeholder="Card number">
-          <button id="send-to-card-button">SENDTOCARD</button>
+            <input type="text" id="dest-card-num" placeholder="Card number" pattern="\d{16}">
+            <button id="send-to-card-button">SENDTOCARD</button>
         </div>
         </div>
       </div>
