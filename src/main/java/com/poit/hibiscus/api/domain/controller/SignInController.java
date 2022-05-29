@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class SignInController {
     @GetMapping("signin")
-    private ResponseEntity<Void> signIn() {
+    public ResponseEntity<Void> signIn() {
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 }

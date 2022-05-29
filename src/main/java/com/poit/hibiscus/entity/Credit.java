@@ -1,13 +1,10 @@
 package com.poit.hibiscus.entity;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.util.Currency;
 
 @Entity
 @Table(name = "credits")

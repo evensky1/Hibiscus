@@ -239,7 +239,11 @@ function sendMoneyFromAccount() {
       headers: {
         'Content-Type': 'application/json'
       }
-    }); // then и погнал чекать ошибки
+    }).then(response => {
+      if (response.status === 400) {
+        alert("Bad request, try to input another values");
+      }
+    });
   } else {
     alert('Please, choose an account');
   }
@@ -249,7 +253,13 @@ function showExRates() {
   let holder = document.querySelector(".rate-holder");
   holder.innerHTML = "";
   fetch('api/v1/currency')
-  .then(response => response.json())
+  .then(response => {
+    if (response.status === 200) {
+      return response.json();
+    } else {
+      throw new Error('Error occurred');
+    }
+  })
   .then(json => {
     let header = document.createElement('h2');
     header.innerHTML = "Exchange rates on " + json.updatedAt.substring(0, 10);
@@ -266,7 +276,8 @@ function showExRates() {
     text = document.createElement('p');
     text.innerHTML = "USD/RUB: " + json.quotes.USDRUB;
     holder.append(text);
-  });
+  })
+  .catch(e => alert(e.toString()));
 }
 
 function sendMoneyFromCard() {
@@ -282,7 +293,11 @@ function sendMoneyFromCard() {
       headers: {
         'Content-Type': 'application/json'
       }
-    }).then(responce => r.json()); // then и погнал чекать ошибки
+    }).then(response => {
+      if (response.status === 400) {
+        alert("Bad request, try to input another values");
+      }
+    });
   } else {
     alert('Please, choose a card');
   }

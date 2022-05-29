@@ -1,15 +1,12 @@
 package com.poit.hibiscus.api.domain.controller;
 
 import com.poit.hibiscus.dto.AccountCardWrapper;
-import com.poit.hibiscus.dto.AccountDto;
 import com.poit.hibiscus.dto.CardDto;
 import com.poit.hibiscus.entity.Card;
-import com.poit.hibiscus.entity.CardAccount;
 import com.poit.hibiscus.service.AccountService;
 import com.poit.hibiscus.service.CardService;
 import com.poit.hibiscus.service.UserService;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.*;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
@@ -63,7 +60,7 @@ public class CardController {
             .getUserAttachedCards(currentUser.getId())
             .stream()
             .map(c -> conversionService.convert(c, CardDto.class))
-            .collect(Collectors.toList());
+            .toList();
 
         return new ResponseEntity<>(userAttachedCardDtos, HttpStatus.OK);
     }

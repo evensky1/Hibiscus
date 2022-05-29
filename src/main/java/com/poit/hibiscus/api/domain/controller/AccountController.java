@@ -44,7 +44,7 @@ public class AccountController {
         return new ResponseEntity<>(
             accountService.getAll().stream()
                 .map(a -> conversionService.convert(a, AccountDto.class))
-                .collect(Collectors.toList()),
+                .toList(),
             HttpStatus.OK);
     }
 
@@ -58,7 +58,7 @@ public class AccountController {
         return new ResponseEntity<>(
             accounts.stream()
                 .map(a -> conversionService.convert(a, AccountDto.class))
-                .collect(Collectors.toList()),
+                .toList(),
             HttpStatus.OK);
     }
 
