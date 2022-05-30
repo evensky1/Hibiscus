@@ -37,7 +37,7 @@ public class CardServiceImpl implements CardService {
     public List<Card> getUserAttachedCards(Long id) {
         var cards = cardRepository.getAllByUserId(id);
 
-        if(cards == null) {
+        if (cards == null) {
             throw new CardException("No card attached to card");
         }
 

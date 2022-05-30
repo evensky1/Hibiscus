@@ -8,8 +8,12 @@ import com.poit.hibiscus.config.TransactionType;
 import com.poit.hibiscus.error.factory.configuration.HandleError;
 import com.poit.hibiscus.error.factory.model.TransactionDeniedException;
 import com.poit.hibiscus.repository.AccountTransactionRepository;
+import com.poit.hibiscus.repository.model.AccountTransactionView;
 import com.poit.hibiscus.service.AbstractQuotesService;
+import com.poit.hibiscus.service.AccountService;
 import com.poit.hibiscus.service.TransactionsService;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +22,14 @@ import java.math.BigDecimal;
 @Service
 public class AccountTransactionServiceImpl extends AbstractQuotesService implements TransactionsService.AccountTransactionService {
     private final AccountTransactionRepository accountTransactionRepository;
+    private final AccountService accountService;
 
     public AccountTransactionServiceImpl(CurrencyOperation currencyOperation,
-                                         AccountTransactionRepository accountTransactionRepository) {
+                                         AccountTransactionRepository accountTransactionRepository,
+                                         AccountService accountService) {
         super(currencyOperation);
         this.accountTransactionRepository = accountTransactionRepository;
+        this.accountService = accountService;
     }
 
     @Override
@@ -38,5 +45,18 @@ public class AccountTransactionServiceImpl extends AbstractQuotesService impleme
         } catch (JpaSystemException | InterruptedException jse) {
             throw new TransactionDeniedException("Transaction denied");
         }
+    }
+
+    @Override
+    public List<AccountTransactionView> findUserAttachedTransactions(Long userId) {
+        var accounts = accountService.getAccountsByUserId(userId);
+
+        List<AccountTransactionView> transactions = new ArrayList<>();
+
+        accounts.forEach(ac ->
+            transactions.addAll(accountTransactionRepository.findAllByAccountId(ac.getId()))
+        );
+
+        return transactions;
     }
 }

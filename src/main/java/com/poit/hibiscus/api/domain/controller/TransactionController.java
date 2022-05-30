@@ -1,35 +1,89 @@
 package com.poit.hibiscus.api.domain.controller;
 
+import com.poit.hibiscus.config.Transaction;
+import com.poit.hibiscus.config.TransactionType;
 import com.poit.hibiscus.dto.TransactionsDto;
+import com.poit.hibiscus.dto.TransactionsDto.AccountTransactionDto;
+import com.poit.hibiscus.dto.TransactionsDto.CardTransactionDto;
 import com.poit.hibiscus.service.TransactionsService;
+import com.poit.hibiscus.service.UserService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/transaction/")
 public class TransactionController {
+
     private final TransactionsService.AccountTransactionService transactionService;
     private final TransactionsService.CardTransactionService cardTransactionService;
+    private final UserService userService;
+    private final ConversionService conversionService;
 
+    @Transaction(type = TransactionType.ACCOUNT_TRANSFER)
     @PostMapping("card")
-    public ResponseEntity<Void> cardTransaction(@RequestBody TransactionsDto.CardTransactionDto cardTransactionDto) {
+    public ResponseEntity<Void> cardTransaction(
+        @RequestBody TransactionsDto.CardTransactionDto cardTransactionDto) {
+
         cardTransactionService.insert(
-                cardTransactionDto.fromCardId(),
-                cardTransactionDto.toCardNumber(),
-                cardTransactionDto.amount());
+            cardTransactionDto.fromCardId(),
+            cardTransactionDto.toCardNumber(),
+            cardTransactionDto.amount());
+
         return ResponseEntity.noContent().build();
     }
 
-     @PostMapping("account")
-     public ResponseEntity<Void> accountTransaction(@RequestBody TransactionsDto.AccountTransactionDto accountTransactionDto) throws InterruptedException {
+    @Transaction(type = TransactionType.CARD_TRANSFER)
+    @PostMapping("account")
+    public ResponseEntity<Void> accountTransaction(
+        @RequestBody TransactionsDto.AccountTransactionDto accountTransactionDto)
+        throws InterruptedException {
+
         transactionService.insert(
-                accountTransactionDto.fromAccountId(),
-                accountTransactionDto.toAccountNumber(),
-                accountTransactionDto.amount());
+            accountTransactionDto.fromAccountId(),
+            accountTransactionDto.toAccountNumber(),
+            accountTransactionDto.amount());
 
         return ResponseEntity.noContent().build();
-     }
+    }
+
+    @GetMapping("card")
+    public ResponseEntity<List<CardTransactionDto>> cardTransactions(
+        @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        var currentUser = userService.findUserByEmail(userDetails.getUsername());
+
+        var transactionViews =
+            cardTransactionService.findUserAttachedTransactions(currentUser.getId());
+
+        var transactionViewDtos =
+            transactionViews.stream()
+                .map(t -> conversionService.convert(t, TransactionsDto.CardTransactionDto.class))
+                .toList();
+
+        return new ResponseEntity<>(transactionViewDtos, HttpStatus.OK);
+    }
+
+    @GetMapping("account")
+    public ResponseEntity<List<AccountTransactionDto>> accountTransactions(
+        @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        var currentUser = userService.findUserByEmail(userDetails.getUsername());
+
+        var transactionViews =
+            transactionService.findUserAttachedTransactions(currentUser.getId());
+
+        var transactionViewsDtos = transactionViews.stream()
+            .map(t -> conversionService.convert(t, TransactionsDto.AccountTransactionDto.class))
+            .toList();
+
+        return new ResponseEntity<>(transactionViewsDtos, HttpStatus.OK);
+    }
 }
 
