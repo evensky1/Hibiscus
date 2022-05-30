@@ -15,13 +15,15 @@ public class TransactionController {
 
     @PostMapping("card")
     public ResponseEntity<Void> cardTransaction(@RequestBody TransactionsDto.CardTransactionDto cardTransactionDto) {
+        cardTransactionService.insert(
+                cardTransactionDto.fromCardId(),
+                cardTransactionDto.toCardNumber(),
+                cardTransactionDto.amount());
         return ResponseEntity.noContent().build();
     }
 
      @PostMapping("account")
-     public ResponseEntity<Void> accountTransaction(
-         @RequestBody TransactionsDto.AccountTransactionDto accountTransactionDto
-     ) throws InterruptedException {
+     public ResponseEntity<Void> accountTransaction(@RequestBody TransactionsDto.AccountTransactionDto accountTransactionDto) throws InterruptedException {
         transactionService.insert(
                 accountTransactionDto.fromAccountId(),
                 accountTransactionDto.toAccountNumber(),

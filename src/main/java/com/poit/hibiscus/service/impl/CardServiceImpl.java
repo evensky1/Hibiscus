@@ -43,4 +43,9 @@ public class CardServiceImpl implements CardService {
 
         return cards;
     }
+
+    @Override
+    public Long findCardIdByNumber(String number) {
+        return cardRepository.findCardIdByCardNumber(number);
+    }
 }

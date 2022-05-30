@@ -11,9 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccountCardWrapper {
-    @JsonProperty("accountDto")
     private AccountDto accountDto;
 
-    @JsonProperty("cardDto")
     private CardDto cardDto;
 }

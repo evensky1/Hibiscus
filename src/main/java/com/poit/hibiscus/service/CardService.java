@@ -7,4 +7,6 @@ public interface CardService {
     Card createCard(Card card, Long accountId, Long userId);
 
     List<Card> getUserAttachedCards(Long id);
+
+    Long findCardIdByNumber(String number);
 }

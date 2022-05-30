@@ -11,6 +11,6 @@ public interface TransactionsService {
     }
 
     interface CardTransactionService {
-        void insert(Transactions.CardTransaction cardTransaction);
+        void insert(Long fromCardId, String toCardNumber, BigDecimal amount);
     }
 }

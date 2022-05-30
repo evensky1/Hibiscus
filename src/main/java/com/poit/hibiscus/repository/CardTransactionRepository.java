@@ -5,13 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public interface AccountTransactionRepository extends JpaRepository<Transactions.AccountTransaction, UUID> {
-
+public interface CardTransactionRepository extends JpaRepository<Transactions.CardTransaction, UUID> {
     @Procedure(procedureName = "made_account_transaction")
     boolean madeAccountTransaction(long toAccountId,
                                    long fromAccountId,
@@ -19,7 +17,12 @@ public interface AccountTransactionRepository extends JpaRepository<Transactions
                                    String currencies);
 
     @Query(value = """
-                SELECT id FROM card_accounts WHERE number = :number
+                SELECT account_id FROM cards WHERE number = :number
                     """, nativeQuery = true)
-    Long findAccountTransactionIdByNumber(@Param("number") String number);
+    Long findAccountIdByNumber(@Param("number") String number);
+
+    @Query(value = """
+                SELECT account_id FROM cards WHERE id = :id
+                """, nativeQuery = true)
+    Long findAccountIdById(@Param("id") Long id);
 }
