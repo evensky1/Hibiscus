@@ -57,7 +57,7 @@ public class AccountTransactionServiceImpl extends AbstractQuotesService impleme
         List<AccountTransaction> transactions = new ArrayList<>();
 
         accounts.forEach(ac ->
-            transactions.addAll(accountTransactionRepository.findAllByFromAccountOrToAccount(ac))
+            transactions.addAll(accountTransactionRepository.findAllByFromAccountOrToAccount(ac, ac))
         );
 
         return transactions.stream()

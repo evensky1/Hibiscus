@@ -57,7 +57,7 @@ public class CardTransactionServiceImpl extends AbstractQuotesService implements
         List<CardTransaction> transactions = new ArrayList<>();
 
         cards.forEach(c ->
-                transactions.addAll(cardTransactionRepository.findAllByFromCardOrToCard(c))
+                transactions.addAll(cardTransactionRepository.findAllByFromCardOrToCard(c, c))
         );
 
         return transactions.stream()

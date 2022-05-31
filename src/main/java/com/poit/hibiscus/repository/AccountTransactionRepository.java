@@ -24,5 +24,5 @@ public interface AccountTransactionRepository extends JpaRepository<Transactions
        """, nativeQuery = true)
     Long findAccountTransactionIdByNumber(@Param("number") String number);
 
-    List<Transactions.AccountTransaction> findAllByFromAccountOrToAccount(CardAccount fromAccount);
+    List<Transactions.AccountTransaction> findAllByFromAccountOrToAccount(CardAccount fromAccount, CardAccount toAccount);
 }
