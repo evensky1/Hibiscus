@@ -66,14 +66,14 @@ public class Transactions {
                 CascadeType.PERSIST
         }, fetch = FetchType.LAZY, optional = false
         ) @JoinColumn(name = "from_card_id", nullable = false)
-        private CardAccount fromCard;
+        private Card fromCard;
 
         @ManyToOne(cascade = {
                 CascadeType.REFRESH,
                 CascadeType.PERSIST
         }, fetch = FetchType.LAZY, optional = false
         ) @JoinColumn(name = "to_card_id", nullable = false)
-        private CardAccount toCard;
+        private Card toCard;
 
         @Column(name = "amount", nullable = false)
         private BigDecimal amount;

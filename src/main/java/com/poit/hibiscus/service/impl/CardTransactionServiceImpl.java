@@ -3,6 +3,7 @@ package com.poit.hibiscus.service.impl;
 import com.poit.hibiscus.api.domain.client.operation.CurrencyOperation;
 import com.poit.hibiscus.config.Transaction;
 import com.poit.hibiscus.config.TransactionType;
+import com.poit.hibiscus.entity.Transactions.CardTransaction;
 import com.poit.hibiscus.error.factory.configuration.HandleError;
 import com.poit.hibiscus.error.factory.model.TransactionDeniedException;
 import com.poit.hibiscus.repository.CardTransactionRepository;
@@ -52,12 +53,21 @@ public class CardTransactionServiceImpl extends AbstractQuotesService implements
     @Override
     public List<CardTransactionView> findUserAttachedTransactions(Long userId) {
         var cards = cardService.getUserAttachedCards(userId);
-        List<CardTransactionView> transactions = new ArrayList<>();
 
-        cards.forEach(c ->
-            transactions.addAll(cardTransactionRepository.findAllByCardId(c.getId()))
+        List<CardTransaction> transactions = new ArrayList<>();
+
+        cards.forEach(c -> {
+                transactions.addAll(cardTransactionRepository.findAllByFromCard(c));
+                transactions.addAll(cardTransactionRepository.findAllByToCard(c));
+            }
         );
 
-        return transactions;
+        return transactions.stream()
+                .map(t -> new CardTransactionView(t.getFromCard().getNumber(),
+                                                  t.getToCard().getNumber(),
+                                                  t.getAmount(),
+                                                  t.getCurrencyType(),
+                                                  t.getBeingAt()))
+                .toList();
     }
 }

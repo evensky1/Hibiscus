@@ -26,6 +26,15 @@ h2 {
   font-family: 'Roboto', sans-serif;
 }
 
+h3 {
+  font-size: 2em;
+  text-align: center;
+  color: #000000;
+  font-weight: 1;
+  text-transform: capitalize;
+  letter-spacing: 4px;
+  font-family: 'Roboto', sans-serif;
+}
 .menu {
   display: flex;
   flex-wrap: wrap;

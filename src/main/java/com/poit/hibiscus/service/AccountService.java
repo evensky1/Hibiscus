@@ -1,6 +1,5 @@
 package com.poit.hibiscus.service;
 
-import com.poit.hibiscus.entity.Card;
 import com.poit.hibiscus.entity.CardAccount;
 import java.math.BigDecimal;
 
@@ -20,4 +19,6 @@ public interface AccountService {
     Long findCardIdByCardNumber(String number);
 
     Currency findCurrencyById(Long id);
+
+    String findNumById(Long id);
 }

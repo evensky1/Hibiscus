@@ -35,7 +35,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET,"/signup", "/signin", "/fail-login").anonymous()
                 .antMatchers("/api/v1/transaction/card").anonymous()
                 .antMatchers("/api/v1/transaction/account").anonymous()
-                .mvcMatchers("/signUp", "/signIn").anonymous()
+                .antMatchers("/resources/static/**").anonymous()
+                .mvcMatchers("/signUp", "/signIn", "/passportPage").anonymous()
                 .mvcMatchers("/style/signupStyle.css").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/v1/accounts/**").permitAll()
                 .anyRequest().authenticated()
@@ -58,11 +59,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
                 .rememberMe()
                 .key("uniqueAndSecret")
-                .userDetailsService(userDetailsService)
-            .and()
-                .sessionManagement()
-                .maximumSessions(1)
-                .maxSessionsPreventsLogin(false);
+                .userDetailsService(userDetailsService);
+//            .and()
+//                .sessionManagement()
+//                .maximumSessions(1)
+//                .maxSessionsPreventsLogin(false);
     }
 
     @Override

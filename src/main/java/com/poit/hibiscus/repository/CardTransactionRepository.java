@@ -1,7 +1,8 @@
 package com.poit.hibiscus.repository;
 
+import com.poit.hibiscus.entity.Card;
 import com.poit.hibiscus.entity.Transactions;
-import com.poit.hibiscus.repository.model.CardTransactionView;
+import com.poit.hibiscus.entity.Transactions.CardTransaction;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -28,11 +29,7 @@ public interface CardTransactionRepository extends JpaRepository<Transactions.Ca
                 """, nativeQuery = true)
     Long findAccountIdById(@Param("id") Long id);
 
-    @Query(value = """
-                SELECT src_c.number, dest_c.number, amount, currency, being_at FROM card_transaction
-                    JOIN cards src_c ON src_c.id = card_transaction.from_card_id
-                    JOIN cards dest_c ON dest_c.id = card_transaction.to_card_id
-                WHERE to_card_id = :cardId OR from_card_id = :cardId;
-            """, nativeQuery = true)
-    List<CardTransactionView> findAllByCardId(@Param("cardId") Long cardId);
+    List<CardTransaction> findAllByFromCard(Card fromCard);
+
+    List<CardTransaction> findAllByToCard(Card toCard);
 }

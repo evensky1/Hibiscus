@@ -1,6 +1,6 @@
 package com.poit.hibiscus.dto.converter;
 
-import com.poit.hibiscus.dto.TransactionsViewDto.AccountTransactionViewDto;
+import com.poit.hibiscus.dto.AccountTransactionViewDto;
 import com.poit.hibiscus.repository.model.AccountTransactionView;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

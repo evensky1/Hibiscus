@@ -5,6 +5,7 @@ import com.poit.hibiscus.api.domain.client.operation.CurrencyOperation;
 import com.poit.hibiscus.config.Transaction;
 
 import com.poit.hibiscus.config.TransactionType;
+import com.poit.hibiscus.entity.Transactions.AccountTransaction;
 import com.poit.hibiscus.error.factory.configuration.HandleError;
 import com.poit.hibiscus.error.factory.model.TransactionDeniedException;
 import com.poit.hibiscus.repository.AccountTransactionRepository;
@@ -20,13 +21,15 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 
 @Service
-public class AccountTransactionServiceImpl extends AbstractQuotesService implements TransactionsService.AccountTransactionService {
+public class AccountTransactionServiceImpl extends AbstractQuotesService implements
+    TransactionsService.AccountTransactionService {
+
     private final AccountTransactionRepository accountTransactionRepository;
     private final AccountService accountService;
 
     public AccountTransactionServiceImpl(CurrencyOperation currencyOperation,
-                                         AccountTransactionRepository accountTransactionRepository,
-                                         AccountService accountService) {
+        AccountTransactionRepository accountTransactionRepository,
+        AccountService accountService) {
         super(currencyOperation);
         this.accountTransactionRepository = accountTransactionRepository;
         this.accountService = accountService;
@@ -40,8 +43,8 @@ public class AccountTransactionServiceImpl extends AbstractQuotesService impleme
 
         try {
             accountTransactionRepository.madeAccountTransaction(
-                    supplier.getId(toAccountNumber), fromAccountId,
-                    amount, getQuotesJSON());
+                supplier.getId(toAccountNumber), fromAccountId,
+                amount, getQuotesJSON());
         } catch (JpaSystemException | InterruptedException jse) {
             throw new TransactionDeniedException("Transaction denied");
         }
@@ -51,12 +54,25 @@ public class AccountTransactionServiceImpl extends AbstractQuotesService impleme
     public List<AccountTransactionView> findUserAttachedTransactions(Long userId) {
         var accounts = accountService.getAccountsByUserId(userId);
 
-        List<AccountTransactionView> transactions = new ArrayList<>();
+        List<AccountTransaction> transactions = new ArrayList<>();
 
-        accounts.forEach(ac ->
-            transactions.addAll(accountTransactionRepository.findAllByAccountId(ac.getId()))
+        accounts.forEach(ac -> {
+                transactions.addAll(accountTransactionRepository.findAllByFromAccount(ac));
+                transactions.addAll(accountTransactionRepository.findAllByToAccount(ac));
+            }
         );
 
-        return transactions;
+        List<AccountTransactionView> views = new ArrayList<>();
+
+        transactions.forEach(t -> views.add(new AccountTransactionView(
+                                                t.getFromAccount().getNumber(),
+                                                t.getToAccount().getNumber(),
+                                                t.getAmount(),
+                                                t.getCurrencyType(),
+                                                t.getBeingAt()
+        )));
+
+
+        return views;
     }
 }

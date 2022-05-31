@@ -28,7 +28,14 @@ public interface AccountRepository extends JpaRepository<CardAccount, Long> {
     Long findAccountIdByAccountNumber(@Param("number") String number);
 
     @Query(value = """
-                SELECT currency FROM card_accounts WHERE id = :id
+                SELECT number FROM card_accounts WHERE id = :id
+                """, nativeQuery = true)
+    String findAccountNumberByAccountId(@Param("id") Long id);
+
+    @Query(value = """
+                SELECT currency_type FROM card_accounts WHERE id = :id
                     """, nativeQuery = true)
     Currency findToAccountCurrencyById(@Param("id") Long id);
+
+    List<CardAccount> findAllByUserId(Long id);
 }

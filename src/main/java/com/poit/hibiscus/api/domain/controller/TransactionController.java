@@ -1,10 +1,8 @@
 package com.poit.hibiscus.api.domain.controller;
 
-import com.poit.hibiscus.config.Transaction;
-import com.poit.hibiscus.config.TransactionType;
+import com.poit.hibiscus.dto.AccountTransactionViewDto;
+import com.poit.hibiscus.dto.CardTransactionViewDto;
 import com.poit.hibiscus.dto.TransactionsDto;
-import com.poit.hibiscus.dto.TransactionsDto.AccountTransactionDto;
-import com.poit.hibiscus.dto.TransactionsDto.CardTransactionDto;
 import com.poit.hibiscus.service.TransactionsService;
 import com.poit.hibiscus.service.UserService;
 import java.util.List;
@@ -26,8 +24,7 @@ public class TransactionController {
     private final UserService userService;
     private final ConversionService conversionService;
 
-    @Transaction(type = TransactionType.ACCOUNT_TRANSFER)
-    @PostMapping("card")
+    @PostMapping("cards")
     public ResponseEntity<Void> cardTransaction(
         @RequestBody TransactionsDto.CardTransactionDto cardTransactionDto) {
 
@@ -39,8 +36,7 @@ public class TransactionController {
         return ResponseEntity.noContent().build();
     }
 
-    @Transaction(type = TransactionType.CARD_TRANSFER)
-    @PostMapping("account")
+    @PostMapping("accounts")
     public ResponseEntity<Void> accountTransaction(
         @RequestBody TransactionsDto.AccountTransactionDto accountTransactionDto)
         throws InterruptedException {
@@ -53,8 +49,8 @@ public class TransactionController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("card")
-    public ResponseEntity<List<CardTransactionDto>> cardTransactions(
+    @GetMapping("cards")
+    public ResponseEntity<List<CardTransactionViewDto>> cardTransactions(
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         var currentUser = userService.findUserByEmail(userDetails.getUsername());
@@ -64,14 +60,14 @@ public class TransactionController {
 
         var transactionViewDtos =
             transactionViews.stream()
-                .map(t -> conversionService.convert(t, TransactionsDto.CardTransactionDto.class))
+                .map(t -> conversionService.convert(t, CardTransactionViewDto.class))
                 .toList();
 
         return new ResponseEntity<>(transactionViewDtos, HttpStatus.OK);
     }
 
-    @GetMapping("account")
-    public ResponseEntity<List<AccountTransactionDto>> accountTransactions(
+    @GetMapping("accounts")
+    public ResponseEntity<List<AccountTransactionViewDto>> accountTransactions(
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         var currentUser = userService.findUserByEmail(userDetails.getUsername());
@@ -80,7 +76,7 @@ public class TransactionController {
             transactionService.findUserAttachedTransactions(currentUser.getId());
 
         var transactionViewsDtos = transactionViews.stream()
-            .map(t -> conversionService.convert(t, TransactionsDto.AccountTransactionDto.class))
+            .map(t -> conversionService.convert(t, AccountTransactionViewDto.class))
             .toList();
 
         return new ResponseEntity<>(transactionViewsDtos, HttpStatus.OK);

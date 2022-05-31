@@ -1,13 +1,11 @@
 package com.poit.hibiscus.api.domain.controller;
 
-import com.poit.hibiscus.config.TransactionType;
 import com.poit.hibiscus.dto.AccountDto;
 import com.poit.hibiscus.entity.CardAccount;
 import com.poit.hibiscus.service.AccountService;
 import com.poit.hibiscus.service.UserService;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
@@ -26,7 +24,8 @@ public class AccountController {
     private final UserService userService;
 
     @PostMapping("new")
-    public ResponseEntity<AccountDto> createAccount(@RequestBody AccountDto accountDto,
+    public ResponseEntity<AccountDto> createAccount(
+        @RequestBody AccountDto accountDto,
         @AuthenticationPrincipal UserDetails userDetails) {
 
         var currentUser = userService.findUserByEmail(userDetails.getUsername());
@@ -52,8 +51,7 @@ public class AccountController {
     @GetMapping("user-attached")
     public ResponseEntity<List<AccountDto>> getAttachedAccounts(
         @AuthenticationPrincipal UserDetails userDetails) {
-        var accounts =
-            accountService.getAccountsByUserId(
+        var accounts = accountService.getAccountsByUserId(
                 userService.findUserByEmail(userDetails.getUsername()).getId());
 
         return new ResponseEntity<>(

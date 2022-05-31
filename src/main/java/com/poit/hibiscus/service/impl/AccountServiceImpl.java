@@ -4,7 +4,6 @@ import com.poit.hibiscus.entity.CardAccount;
 import com.poit.hibiscus.repository.AccountRepository;
 import com.poit.hibiscus.service.AccountService;
 
-import java.util.Collections;
 import java.util.Currency;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +31,7 @@ public class AccountServiceImpl implements AccountService {
                 .money(BigDecimal.ZERO)
                 .number(String.valueOf(accountNum))
                 .iban(iban)
+                .userId(userId)
                 .build();
 
         return accountRepository.save(newCardAccount);
@@ -49,7 +49,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public List<CardAccount> getAccountsByUserId(Long id) {
-        return Collections.singletonList(new CardAccount());
+        return accountRepository.findAllByUserId(id);
     }
 
     @Override
@@ -71,5 +71,10 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Currency findCurrencyById(Long id) {
         return accountRepository.findToAccountCurrencyById(id);
+    }
+
+    @Override
+    public String findNumById(Long id) {
+        return accountRepository.findAccountNumberByAccountId(id);
     }
 }

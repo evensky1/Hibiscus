@@ -232,18 +232,24 @@ function sendMoneyFromAccount() {
     data.fromAccountId = targetAccount.firstChild.innerHTML;
     data.toAccountNumber = document.getElementById("dest-account-num").value;
     data.amount = document.getElementById("amount-of-money").value;
-
-    fetch('api/v1/transaction/account', {
+    fetch('api/v1/transaction/accounts', {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {
         'Content-Type': 'application/json'
       }
     }).then(response => {
+      console.log(response.status);
       if (response.status === 400) {
         alert("Bad request, try to input another values");
+      } else if (response.status === 204) {
+        alert("Your money were successfully transferred");
       }
-    });
+      return response.body;
+    })
+    .then(json => console.log(json))
+    .catch(e => console.log(e.toString()));
+    console.log(JSON.stringify(data));
   } else {
     alert('Please, choose an account');
   }
@@ -251,43 +257,47 @@ function sendMoneyFromAccount() {
 
 function showExRates() {
   let holder = document.querySelector(".rate-holder");
-  holder.innerHTML = "";
-  fetch('api/v1/currency')
-  .then(response => {
-    if (response.status === 200) {
-      return response.json();
-    } else {
-      throw new Error('Error occurred');
-    }
-  })
-  .then(json => {
-    let header = document.createElement('h2');
-    header.innerHTML = "Exchange rates on " + json.updatedAt.substring(0, 10);
-    holder.append(header);
+  while (holder.getElementsByTagName('p')[0].innerHTML === "") {
+    fetch('api/v1/currency')
+    .then(response => {
+      if (response.status === 200) {
+        return response.json();
+      } else {
+        throw new Error('Error occurred');
+      }
+    })
+    .then(json => {
+      holder.innerHTML = "";
 
-    let text = document.createElement('p');
-    text.innerHTML = "USD/EUR: " + json.quotes.USDEUR;
-    holder.append(text);
+      let header = document.createElement('h2');
+      header.innerHTML = "Exchange rates on " + json.updatedAt.substring(0, 10);
+      holder.append(header);
 
-    text = document.createElement('p');
-    text.innerHTML = "USD/BYN: " + json.quotes.USDBYN;
-    holder.append(text);
+      let text = document.createElement('p');
+      text.innerHTML = "USD/EUR: " + json.quotes.USDEUR;
+      holder.append(text);
 
-    text = document.createElement('p');
-    text.innerHTML = "USD/RUB: " + json.quotes.USDRUB;
-    holder.append(text);
-  })
-  .catch(e => alert(e.toString()));
+      text = document.createElement('p');
+      text.innerHTML = "USD/BYN: " + json.quotes.USDBYN;
+      holder.append(text);
+
+      text = document.createElement('p');
+      text.innerHTML = "USD/RUB: " + json.quotes.USDRUB;
+      holder.append(text);
+    })
+    .catch(e => alert(e.toString()));
+  }
 }
 
 function sendMoneyFromCard() {
   const data = {};
   if (targetCard) {
-    data.fromAccountId = targetCard.firstChild.innerHTML;
+    data.fromCardId = targetCard.firstChild.innerHTML;
     data.toCardNumber = document.getElementById("dest-card-num").value;
     data.amount = document.getElementById("amount-of-money").value;
 
-    fetch('api/v1/transaction/card', {
+    console.log(JSON.stringify(data));
+    fetch('api/v1/transaction/cards', {
       method: 'POST',
       body: JSON.stringify(data),
       headers: {
@@ -301,6 +311,64 @@ function sendMoneyFromCard() {
   } else {
     alert('Please, choose a card');
   }
+}
+
+function showAllTransactions() {
+  let holder = document.querySelector(".transaction-holder");
+  holder.innerHTML = "";
+  let header = document.createElement('h3');
+  header.innerHTML = 'Card transactions:';
+  holder.append(header);
+
+  fetch('api/v1/transaction/cards')
+  .then(response => {
+    if (response.status === 200) {
+      return response.json();
+    } else {
+      throw new Error('Something goes really wrong');
+    }
+  })
+  .then(json => json.forEach(tInfo => createCardTransactionView(tInfo)))
+  .catch(e => console.log(e.toString()));
+
+  header = document.createElement('h3');
+  header.innerHTML = 'Account transactions:';
+  holder.append(header);
+
+  fetch('api/v1/transaction/accounts')
+  .then(response => {
+    if (response.status === 200) {
+      return response.json();
+    } else {
+      throw new Error('Something goes really wrong');
+    }
+  })
+  .then(json => json.forEach(tInfo => createAccountTransactionView(tInfo)))
+  .catch(e => console.log(e.toString()));
+}
+
+function createAccountTransactionView(element) {
+  let holder = document.querySelector(".transaction-holder");
+
+  const text = document.createElement('p');
+  text.innerHTML = "FROM: " + element.srcAccountNumber +
+      "  TO: " + element.destAccountNumber +
+      "  " + element.amount + element.currencyType +
+      " AT " + element.beingAt;
+
+  holder.append(text);
+}
+
+function createCardTransactionView(element) {
+  let holder = document.querySelector(".transaction-holder");
+
+  const text = document.createElement('p');
+  text.innerHTML = "FROM: " + element.srcCardNumber +
+      "  TO: " + element.destCardNumber +
+      "  " + element.amount + element.currencyType +
+      " AT " + element.beingAt;
+
+  holder.append(text);
 }
 
 accountElements = document.getElementsByClassName("account-elem");
@@ -323,3 +391,4 @@ document.querySelector("#create-card-button").addEventListener('click',
     createCard);
 
 showExRates();
+showAllTransactions();

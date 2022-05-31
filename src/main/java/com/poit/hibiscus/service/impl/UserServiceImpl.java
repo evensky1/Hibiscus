@@ -7,6 +7,7 @@ import com.poit.hibiscus.error.factory.model.SignInException;
 import com.poit.hibiscus.error.factory.model.SignUpException;
 import com.poit.hibiscus.repository.UserRepository;
 import com.poit.hibiscus.service.UserService;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +20,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @HandleError
-    public void saveUser(User user) {
+    public Optional<User> saveUser(User user) {
         if(userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new SignUpException("Current email already exists in database");
         }
-        userRepository.save(user);
+        return Optional.of(userRepository.save(user));
     }
 
     @Override
