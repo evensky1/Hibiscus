@@ -95,20 +95,19 @@ CREATE TABLE IF NOT EXISTS card_transaction
     FOREIGN KEY (from_card_id) REFERENCES cards (id),
     FOREIGN KEY (to_card_id) REFERENCES cards (id)
 );
+DROP FUNCTION IF EXISTS made_account_transaction(to_account_id bigint, from_account_id bigint, amount numeric(10, 3), currencies varchar);
 
 CREATE FUNCTION
-    made_account_transaction(to_account_id bigint, from_account_id bigint, amount numeric(10, 3),
-                             currencies varchar)
-    RETURNS boolean AS
-$$
+    made_account_transaction(to_account_id bigint, from_account_id bigint, amount numeric(10, 3), currencies varchar)
+    RETURNS boolean AS $$
 DECLARE
     from_account_currency_type currency_type;
-    to_account_currency_type   currency_type;
-    from_account_currency      numeric(10, 3);
-    to_account_currency        numeric(10, 3);
-    money_var                  numeric(10, 3);
-    temp_amount                numeric(10, 3);
-    USD constant               text := 'USD';
+    to_account_currency_type currency_type;
+    from_account_currency numeric(10, 3);
+    to_account_currency numeric(10, 3);
+    money_var numeric(10, 3);
+    temp_amount numeric(10, 3);
+    USD constant text := 'USD';
 BEGIN
     SELECT money INTO money_var FROM card_accounts WHERE id = from_account_id;
 
@@ -118,10 +117,7 @@ BEGIN
         RAISE EXCEPTION 'Reflection transaction is not allowed' USING ERRCODE = 'P0001';
     END IF;
 
-    SELECT currency_type
-    INTO from_account_currency_type
-    FROM card_accounts
-    WHERE id = from_account_id;
+    SELECT currency_type INTO from_account_currency_type FROM card_accounts WHERE id = from_account_id;
     SELECT currency_type INTO to_account_currency_type FROM card_accounts WHERE id = to_account_id;
 
     IF from_account_currency_type = to_account_currency_type THEN
@@ -134,14 +130,18 @@ BEGIN
             WHERE key LIKE concat('%', from_account_currency_type::text);
 
             temp_amount := amount / from_account_currency;
+        ELSE
+            temp_amount := amount;
         END IF;
+        IF to_account_currency_type::text != USD THEN
+            SELECT value INTO to_account_currency
+            FROM (SELECT * FROM json_each(currencies::json)) AS "*2"
+            WHERE key LIKE concat('%', to_account_currency_type::text);
+            raise notice '%', to_account_currency;
 
-        SELECT value INTO to_account_currency
-        FROM (SELECT * FROM json_each(currencies::json)) AS "*2"
-        WHERE key LIKE concat('%', to_account_currency_type::text);
-
-        temp_amount := temp_amount * to_account_currency;
-
+            temp_amount := temp_amount * to_account_currency;
+            raise notice '%', temp_amount;
+        END IF;
         UPDATE card_accounts SET money = @money + temp_amount WHERE id = to_account_id;
     END IF;
 

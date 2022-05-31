@@ -56,23 +56,16 @@ public class AccountTransactionServiceImpl extends AbstractQuotesService impleme
 
         List<AccountTransaction> transactions = new ArrayList<>();
 
-        accounts.forEach(ac -> {
-                transactions.addAll(accountTransactionRepository.findAllByFromAccount(ac));
-                transactions.addAll(accountTransactionRepository.findAllByToAccount(ac));
-            }
+        accounts.forEach(ac ->
+            transactions.addAll(accountTransactionRepository.findAllByFromAccountOrToAccount(ac))
         );
 
-        List<AccountTransactionView> views = new ArrayList<>();
-
-        transactions.forEach(t -> views.add(new AccountTransactionView(
-                                                t.getFromAccount().getNumber(),
-                                                t.getToAccount().getNumber(),
-                                                t.getAmount(),
-                                                t.getCurrencyType(),
-                                                t.getBeingAt()
-        )));
-
-
-        return views;
+        return transactions.stream()
+                .map(t -> new AccountTransactionView(t.getFromAccount().getNumber(),
+                                                     t.getToAccount().getNumber(),
+                                                     t.getAmount(),
+                                                     t.getCurrencyType(),
+                                                     t.getBeingAt()))
+                .toList();
     }
 }

@@ -29,7 +29,6 @@ public interface CardTransactionRepository extends JpaRepository<Transactions.Ca
                 """, nativeQuery = true)
     Long findAccountIdById(@Param("id") Long id);
 
-    List<CardTransaction> findAllByFromCard(Card fromCard);
+    List<CardTransaction> findAllByFromCardOrToCard(Card fromCard);
 
-    List<CardTransaction> findAllByToCard(Card toCard);
 }
