@@ -11,7 +11,7 @@ public abstract class AbstractLoggerFactoryAspect {
 
     protected abstract void cardTransactionResolver(Long fromCardId, String toCardNumber, BigDecimal amount);
 
-    protected TransactionType retrieveType(Class<?> clazz, String methodName) throws NoSuchMethodException {
+    protected TransactionType retrieveType(Class<?> clazz, String methodName) {
         return Arrays.stream(clazz.getMethods())
                 .filter(method -> method
                         .getName()

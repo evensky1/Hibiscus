@@ -1,6 +1,7 @@
 package com.poit.hibiscus.service.impl;
 
 import com.poit.hibiscus.entity.Card;
+import com.poit.hibiscus.entity.CurrencyType;
 import com.poit.hibiscus.error.factory.configuration.HandleError;
 import com.poit.hibiscus.error.factory.model.CardException;
 import com.poit.hibiscus.repository.CardRepository;
@@ -48,4 +49,11 @@ public class CardServiceImpl implements CardService {
     public Long findCardIdByNumber(String number) {
         return cardRepository.findCardIdByCardNumber(number);
     }
+
+    @Override
+    public CurrencyType findCurrencyTypeById(Long id) {
+        return cardRepository.findCurrencyTypeById(id);
+    }
+
+
 }

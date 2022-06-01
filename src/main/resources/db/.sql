@@ -151,3 +151,42 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql
     SECURITY DEFINER;
+
+DROP FUNCTION IF EXISTS log_card_transaction(to_card BIGINT, from_card BIGINT, money_amount NUMERIC(10, 3));
+
+CREATE FUNCTION
+    log_card_transaction(to_card BIGINT, from_card BIGINT, money_amount NUMERIC(10, 3))
+    RETURNS boolean AS $$
+    DECLARE
+        curr_type currency_type;
+    BEGIN
+
+        SELECT currency_type INTO curr_type FROM cards
+        JOIN card_accounts ca on ca.id = cards.account_id
+        WHERE cards.id = from_card;
+
+        INSERT INTO card_transaction(to_card_id, from_card_id, amount, currency)
+        VALUES (to_card, from_card, money_amount, curr_type);
+
+        RETURN true;
+    END;
+    $$ LANGUAGE plpgsql
+    SECURITY DEFINER;
+
+CREATE FUNCTION
+    log_account_transaction(to_account BIGINT, from_account BIGINT, money_amount NUMERIC(10, 3))
+    RETURNS boolean AS $$
+    DECLARE
+        curr_type currency_type;
+    BEGIN
+
+        SELECT currency_type INTO curr_type FROM card_accounts
+        WHERE card_accounts.id = from_account;
+
+        INSERT INTO account_transaction(to_account_id, from_account_id, amount, currency)
+        VALUES (to_account, from_account, money_amount, curr_type);
+
+        RETURN true;
+    END;
+    $$ LANGUAGE plpgsql
+    SECURITY DEFINER;

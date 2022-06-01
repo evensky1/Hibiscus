@@ -14,9 +14,8 @@ class CardLoggerOperation extends AbstractLoggerFactoryAspect.AbstractLoggerOper
     private final CardTransactionLoggingRepository cardTransactionLoggingRepository;
 
     @Override
-    public void insert(Long fromAccountId, String toAccountNumber, BigDecimal amount) {
-        var toCardId = cardService.findCardIdByNumber(toAccountNumber);
-
-        cardTransactionLoggingRepository.insert(fromAccountId, toCardId, amount);
+    public void insert(Long fromCardId, String toCardNumber, BigDecimal amount) {
+        var toCardId = cardService.findCardIdByNumber(toCardNumber);
+        cardTransactionLoggingRepository.insert(fromCardId, toCardId, amount);
     }
 }
