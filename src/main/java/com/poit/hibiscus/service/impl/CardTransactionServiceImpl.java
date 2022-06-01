@@ -45,7 +45,7 @@ public class CardTransactionServiceImpl extends AbstractQuotesService implements
                 toAccountSupplier.getId(toCardNumber),
                 fromAccountSupplier.getId(fromCardId),
                 amount, getQuotesJSON());
-        } catch (JpaSystemException | InterruptedException jse) {
+        } catch (JpaSystemException | InterruptedException | NullPointerException jseException) {
             throw new TransactionDeniedException("Transaction denied");
         }
     }

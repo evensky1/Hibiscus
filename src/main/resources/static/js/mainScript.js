@@ -175,7 +175,7 @@ function createCard() {
     card.expirationTime = (today.getFullYear() + Number(
             selector.value.charAt(0)))
         + '-0' + (today.getMonth() + 1)
-        + '-' + today.getDate()
+        + '-' + ((today.getDate() < 10) ? '0' + today.getDate() : today.getDate())
         + 'T00:00';
 
     data.accountDto = account;
@@ -229,12 +229,13 @@ function sendMoneyFromAccount() {
   if (targetAccount) {
     data.fromAccountId = targetAccount.firstChild.innerHTML;
     data.toAccountNumber = document.getElementById("dest-account-num").value;
-    if (data.toAccountNumber.length !== 16 || isNaN(data.toCardNumber)) {
+
+    if (data.toAccountNumber.match('^\\d{16}$').length === null) {
       alert("Destination account field is invalid");
       return;
     }
     data.amount = document.getElementById("amount-of-money").value;
-    if (isNaN(data.amount)) {
+    if (data.amount.match('^\\d+$') === null) {
       alert("Amount field is invalid");
       return;
     }
@@ -250,6 +251,8 @@ function sendMoneyFromAccount() {
         alert("Bad request, try to input another values");
       } else if (response.status === 204) {
         alert("Your money were successfully transferred");
+        document.getElementById("amount-of-money").value = "";
+        document.getElementById("dest-account-num").value = "";
         displayAccountTransactions();
         displayAccounts();
       }
@@ -300,12 +303,12 @@ function sendMoneyFromCard() {
   if (targetCard) {
     data.fromCardId = targetCard.firstChild.innerHTML;
     data.toCardNumber = document.getElementById("dest-card-num").value;
-    if (data.toCardNumber.length !== 16 || isNaN(data.toCardNumber)) {
+    if (data.toCardNumber.match('^\\d{16}$').length === null) {
       alert("Destination card field is invalid");
       return;
     }
     data.amount = document.getElementById("amount-of-money").value;
-    if (isNaN(data.amount)) {
+    if (data.amount.match('^\\d+$').length === null) {
       alert("Amount field is invalid");
       return;
     }
@@ -321,6 +324,8 @@ function sendMoneyFromCard() {
         alert("Bad request, try to input another values");
       } else if (response.status === 204) {
         alert("Your money were successfully transferred");
+        document.getElementById("amount-of-money").value = "";
+        document.getElementById("dest-card-num").value = "";
         displayCardTransactions();
         displayAccounts();
       }

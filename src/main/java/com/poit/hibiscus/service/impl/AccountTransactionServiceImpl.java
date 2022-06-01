@@ -45,7 +45,7 @@ public class AccountTransactionServiceImpl extends AbstractQuotesService impleme
             accountTransactionRepository.madeAccountTransaction(
                 supplier.getId(toAccountNumber), fromAccountId,
                 amount, getQuotesJSON());
-        } catch (JpaSystemException | InterruptedException jse) {
+        } catch (JpaSystemException | InterruptedException | NullPointerException jse) {
             throw new TransactionDeniedException("Transaction denied");
         }
     }
