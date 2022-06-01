@@ -229,7 +229,15 @@ function sendMoneyFromAccount() {
   if (targetAccount) {
     data.fromAccountId = targetAccount.firstChild.innerHTML;
     data.toAccountNumber = document.getElementById("dest-account-num").value;
+    if (data.toAccountNumber.length !== 16 || isNaN(data.toCardNumber)) {
+      alert("Destination account field is invalid");
+      return;
+    }
     data.amount = document.getElementById("amount-of-money").value;
+    if (isNaN(data.amount)) {
+      alert("Amount field is invalid");
+      return;
+    }
     fetch('api/v1/transaction/accounts', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -242,6 +250,8 @@ function sendMoneyFromAccount() {
         alert("Bad request, try to input another values");
       } else if (response.status === 204) {
         alert("Your money were successfully transferred");
+        displayAccountTransactions();
+        displayAccounts();
       }
       return response.body;
     })
@@ -290,8 +300,15 @@ function sendMoneyFromCard() {
   if (targetCard) {
     data.fromCardId = targetCard.firstChild.innerHTML;
     data.toCardNumber = document.getElementById("dest-card-num").value;
+    if (data.toCardNumber.length !== 16 || isNaN(data.toCardNumber)) {
+      alert("Destination card field is invalid");
+      return;
+    }
     data.amount = document.getElementById("amount-of-money").value;
-
+    if (isNaN(data.amount)) {
+      alert("Amount field is invalid");
+      return;
+    }
     console.log(JSON.stringify(data));
     fetch('api/v1/transaction/cards', {
       method: 'POST',
@@ -304,6 +321,8 @@ function sendMoneyFromCard() {
         alert("Bad request, try to input another values");
       } else if (response.status === 204) {
         alert("Your money were successfully transferred");
+        displayCardTransactions();
+        displayAccounts();
       }
     });
   } else {
@@ -311,8 +330,7 @@ function sendMoneyFromCard() {
   }
 }
 
-function showAllTransactions() {
-
+function displayCardTransactions() {
   fetch('api/v1/transaction/cards')
   .then(response => {
     if (response.status === 200) {
@@ -321,9 +339,15 @@ function showAllTransactions() {
       throw new Error('Something goes really wrong');
     }
   })
-  .then(json => json.forEach(tInfo => createCardTransactionView(tInfo)))
+  .then(json => {
+    document.querySelector(".card-transactions").innerHTML
+        = "<h3>Card transactions:</h3>";
+    json.forEach(tInfo => createCardTransactionView(tInfo));
+  })
   .catch(e => console.log(e.toString()));
+}
 
+function displayAccountTransactions() {
   fetch('api/v1/transaction/accounts')
   .then(response => {
     if (response.status === 200) {
@@ -332,7 +356,11 @@ function showAllTransactions() {
       throw new Error('Something goes really wrong');
     }
   })
-  .then(json => json.forEach(tInfo => createAccountTransactionView(tInfo)))
+  .then(json => {
+      document.querySelector(".account-transactions").innerHTML
+          = "<h3>Account transactions:</h3>";
+      json.forEach(tInfo => createAccountTransactionView(tInfo));
+  })
   .catch(e => console.log(e.toString()));
 }
 
@@ -353,7 +381,7 @@ function createCardTransactionView(element) {
   text.innerHTML = "FROM: " + element.srcCardNumber +
       "  TO: " + element.destCardNumber +
       "  " + element.amount + element.currencyType +
-      " AT " + element.beingAt;
+      " AT " + element.beingAt.substring(0, 10) + " " + element.beingAt.substring(12, 16);
 
   holder.append(text);
 }
@@ -379,5 +407,6 @@ document.querySelector("#create-card-button").addEventListener('click',
 
 displayCards();
 displayAccounts();
-showAllTransactions();
+displayCardTransactions();
+displayAccountTransactions();
 showExRates();
