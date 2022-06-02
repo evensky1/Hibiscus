@@ -13,6 +13,6 @@ public interface CardTransactionLoggingRepository extends JpaRepository<Transact
     @Transactional
     @Procedure(procedureName = "log_card_transaction")
     boolean insert(Long fromId,
-                Long toId,
-                BigDecimal amount);
+                   Long toId,
+                   BigDecimal amount);
 }

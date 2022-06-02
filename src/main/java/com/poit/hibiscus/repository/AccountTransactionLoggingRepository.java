@@ -11,8 +11,8 @@ import java.util.UUID;
 public interface AccountTransactionLoggingRepository extends JpaRepository<Transactions.AccountTransaction, UUID> {
 
     @Transactional
-    @Procedure(name = "log_account_transaction")
-    void insert(Long fromId,
-                Long toId,
-                BigDecimal amount);
+    @Procedure(procedureName = "log_account_transaction")
+    boolean insert(Long fromId,
+                   Long toId,
+                   BigDecimal amount);
 }

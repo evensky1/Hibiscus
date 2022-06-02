@@ -155,7 +155,7 @@ $$ LANGUAGE plpgsql
 DROP FUNCTION IF EXISTS log_card_transaction(to_card BIGINT, from_card BIGINT, money_amount NUMERIC(10, 3));
 
 CREATE FUNCTION
-    log_card_transaction(to_card BIGINT, from_card BIGINT, money_amount NUMERIC(10, 3))
+    log_card_transaction(from_card BIGINT, to_card BIGINT, money_amount NUMERIC(10, 3))
     RETURNS boolean AS $$
     DECLARE
         curr_type currency_type;
@@ -174,7 +174,7 @@ CREATE FUNCTION
     SECURITY DEFINER;
 
 CREATE FUNCTION
-    log_account_transaction(to_account BIGINT, from_account BIGINT, money_amount NUMERIC(10, 3))
+    log_account_transaction(from_account BIGINT, to_account BIGINT, money_amount NUMERIC(10, 3))
     RETURNS boolean AS $$
     DECLARE
         curr_type currency_type;
