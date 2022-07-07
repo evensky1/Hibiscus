@@ -31,14 +31,11 @@ public class CurrencyOperation {
                 .exceptionallyAsync(e -> {
                     log.warn("Exception occurred in currency method: {}", e.getMessage());
 
-                    return Mono.just(new Currency());
-        }).thenApplyAsync(data -> data.subscribe(currency -> currency.getQuotes().entrySet()
-                .parallelStream()
-                .filter(s -> s.getKey() != null)
-                .filter(s -> s.getKey().equals(CurrencyType.USDBYN) ||
-                        s.getKey().equals(CurrencyType.USDRUB) ||
-                        s.getKey().equals(CurrencyType.USDEUR))
-                        .forEach(s -> quotes.put(s.getKey(), s.getValue()))));
+                    return Mono.just(new Currency());})
+                .thenApplyAsync(data -> data.subscribe(currency -> currency.getQuotes().entrySet()
+                    .parallelStream()
+                    .filter(s -> s.getKey() != null)
+                    .forEach(s -> quotes.put(s.getKey(), s.getValue()))));
 
         Thread.sleep(1000);
 

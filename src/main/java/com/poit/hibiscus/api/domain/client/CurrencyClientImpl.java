@@ -22,6 +22,7 @@ public class CurrencyClientImpl implements CurrencyClient {
                 .uri(uriBuilder ->
                         uriBuilder.path(ClientProperties.ENDPOINT)
                                 .queryParam("access_key", ClientProperties.ACCESS_KEY)
+                                .queryParam("currencies", ClientProperties.CURRENCIES)
                                 .build()
                 )
                 .retrieve()
