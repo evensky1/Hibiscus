@@ -278,9 +278,8 @@ function showExRates() {
     })
     .then(json => {
       holder.innerHTML = "";
-      console.log(json);
       let header = document.createElement('h2');
-      header.innerHTML = "Exchange rates on " + json.updatedAt.substring(0, 10);
+      header.innerHTML = "Exchange rates on " + json.currencyUpdatedAt.substring(0, 10);
       holder.append(header);
 
       let text = document.createElement('p');

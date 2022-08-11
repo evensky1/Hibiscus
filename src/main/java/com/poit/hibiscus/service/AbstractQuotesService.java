@@ -13,7 +13,7 @@ public abstract class AbstractQuotesService {
     protected String getQuotesJSON() throws InterruptedException {
         var currency = currencyOperation.activate();
 
-        return new Gson().toJson(currency.getQuotes());
+        return new Gson().toJson(currency.block());
     }
 
     @FunctionalInterface
