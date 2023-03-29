@@ -1,24 +1,18 @@
-package com.poit.hibiscus.service;
+package com.poit.hibiscus.service.impl;
 
 import com.google.gson.Gson;
-import com.poit.hibiscus.api.client.model.Currency;
 import com.poit.hibiscus.api.client.operation.CurrencyOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 @RequiredArgsConstructor
-public abstract class AbstractQuotesService {
+public class QuotesService {
     private final CurrencyOperation currencyOperation;
 
     protected String getQuotesJSON() throws InterruptedException {
         var currency = currencyOperation.activate();
 
         return new Gson().toJson(currency.block().getQuotes());
-    }
-
-    @FunctionalInterface
-    protected interface Supplier<T, E> {
-        E getId(T t);
     }
 }

@@ -1,7 +1,5 @@
 package com.poit.hibiscus.service.impl;
 
-import com.poit.hibiscus.api.client.operation.CurrencyOperation;
-
 import com.poit.hibiscus.config.Transaction;
 
 import com.poit.hibiscus.config.TransactionType;
@@ -10,42 +8,34 @@ import com.poit.hibiscus.error.factory.configuration.HandleError;
 import com.poit.hibiscus.error.factory.model.TransactionDeniedException;
 import com.poit.hibiscus.repository.AccountTransactionRepository;
 import com.poit.hibiscus.repository.model.AccountTransactionView;
-import com.poit.hibiscus.service.AbstractQuotesService;
 import com.poit.hibiscus.service.AccountService;
 import com.poit.hibiscus.service.AccountTransactionService;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
 @Service
-public class AccountTransactionServiceImpl
-    extends AbstractQuotesService
-    implements AccountTransactionService {
+@AllArgsConstructor
+public class AccountTransactionServiceImpl implements AccountTransactionService {
 
     private final AccountTransactionRepository accountTransactionRepository;
     private final AccountService accountService;
-
-    public AccountTransactionServiceImpl(CurrencyOperation currencyOperation,
-        AccountTransactionRepository accountTransactionRepository,
-        AccountService accountService) {
-        super(currencyOperation);
-        this.accountTransactionRepository = accountTransactionRepository;
-        this.accountService = accountService;
-    }
+    private final QuotesService quotesService;
 
     @Override
     @HandleError
     @Transaction(type = TransactionType.ACCOUNT_TRANSFER)
     public void insert(Long fromAccountId, String toAccountNumber, BigDecimal amount) {
-        Supplier<String, Long> supplier = accountTransactionRepository::findAccountTransactionIdByNumber;
+        var toAccountId =
+            accountTransactionRepository.findAccountTransactionIdByNumber(toAccountNumber);
 
         try {
             accountTransactionRepository.madeAccountTransaction(
-                supplier.getId(toAccountNumber), fromAccountId,
-                amount, getQuotesJSON());
+                toAccountId, fromAccountId, amount, quotesService.getQuotesJSON());
         } catch (JpaSystemException | InterruptedException | NullPointerException jse) {
             throw new TransactionDeniedException("Transaction denied");
         }
@@ -57,9 +47,11 @@ public class AccountTransactionServiceImpl
 
         List<AccountTransaction> transactions = new ArrayList<>();
 
-        accounts.forEach(ac ->
-            transactions.addAll(accountTransactionRepository.findAllByFromAccountOrToAccount(ac, ac))
-        );
+        accounts.forEach(ac -> {
+            var accountTransactions = accountTransactionRepository
+                .findAllByFromAccountOrToAccount(ac, ac);
+            transactions.addAll(accountTransactions);
+        });
 
         return transactions.stream()
                 .map(t -> new AccountTransactionView(t.getFromAccount().getNumber(),
