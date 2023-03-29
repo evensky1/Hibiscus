@@ -1,51 +1,41 @@
 package com.poit.hibiscus.service.impl;
 
-import com.poit.hibiscus.api.client.operation.CurrencyOperation;
 import com.poit.hibiscus.config.Transaction;
 import com.poit.hibiscus.config.TransactionType;
-import com.poit.hibiscus.entity.Transactions.CardTransaction;
+import com.poit.hibiscus.entity.CardTransaction;
 import com.poit.hibiscus.error.factory.configuration.HandleError;
 import com.poit.hibiscus.error.factory.model.TransactionDeniedException;
 import com.poit.hibiscus.repository.CardTransactionRepository;
 import com.poit.hibiscus.repository.model.CardTransactionView;
-import com.poit.hibiscus.service.AbstractQuotesService;
 import com.poit.hibiscus.service.CardService;
 import com.poit.hibiscus.service.CardTransactionService;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
 @Service
-public class CardTransactionServiceImpl
-    extends AbstractQuotesService
-    implements CardTransactionService {
+@AllArgsConstructor
+public class CardTransactionServiceImpl implements CardTransactionService {
 
     private final CardTransactionRepository cardTransactionRepository;
     private final CardService cardService;
-
-    public CardTransactionServiceImpl(CurrencyOperation currencyOperation,
-                                      CardTransactionRepository cardTransactionRepository,
-                                      CardService cardService) {
-        super(currencyOperation);
-        this.cardTransactionRepository = cardTransactionRepository;
-        this.cardService = cardService;
-    }
+    private final QuotesService quotesService;
 
     @Override
     @HandleError
     @Transaction(type = TransactionType.CARD_TRANSFER)
     public void insert(Long fromCardId, String toCardNumber, BigDecimal amount) {
-        Supplier<String, Long> toAccountSupplier = cardTransactionRepository::findAccountIdByNumber;
-        Supplier<Long, Long> fromAccountSupplier = cardTransactionRepository::findAccountIdById;
+        var toAccountId = cardTransactionRepository.findAccountIdByNumber(toCardNumber);
+        var fromAccountId = cardTransactionRepository.findAccountIdById(fromCardId);
 
         try {
             cardTransactionRepository.madeAccountTransaction(
-                toAccountSupplier.getId(toCardNumber),
-                fromAccountSupplier.getId(fromCardId),
-                amount, getQuotesJSON());
+                toAccountId, fromAccountId, amount, quotesService.getQuotesJSON());
+
         } catch (JpaSystemException | InterruptedException | NullPointerException jseException) {
             throw new TransactionDeniedException("Transaction denied");
         }
@@ -57,16 +47,18 @@ public class CardTransactionServiceImpl
 
         List<CardTransaction> transactions = new ArrayList<>();
 
-        cards.forEach(c ->
-                transactions.addAll(cardTransactionRepository.findAllByFromCardOrToCard(c, c))
-        );
+        cards.forEach(c -> {
+            var cardTransactions = cardTransactionRepository
+                .findAllByFromCardOrToCard(c, c);
+            transactions.addAll(cardTransactions);
+        });
 
         return transactions.stream()
-                .map(t -> new CardTransactionView(t.getFromCard().getNumber(),
-                                                  t.getToCard().getNumber(),
-                                                  t.getAmount(),
-                                                  t.getCurrencyType(),
-                                                  t.getBeingAt()))
-                .toList();
+            .map(t -> new CardTransactionView(t.getFromCard().getNumber(),
+                                              t.getToCard().getNumber(),
+                                              t.getAmount(),
+                                              t.getCurrencyType(),
+                                              t.getBeingAt()))
+            .toList();
     }
 }
