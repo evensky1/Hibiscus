@@ -52,6 +52,6 @@ public class CardAccount {
     @ToString.Exclude
     private Set<Card> cards = new HashSet<>();
 
-    @Column(name = "user_id")
+    @Column(name = "person_id")
     private Long userId;
 }

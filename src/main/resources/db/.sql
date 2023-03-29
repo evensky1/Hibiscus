@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS person, card, card_account, passport, card_transaction, account_transaction;
+DROP TYPE currency_type;
 
 CREATE TABLE if not exists passport
 (
@@ -13,10 +14,10 @@ CREATE TABLE if not exists passport
 CREATE TABLE if not exists person
 (
     id          BIGSERIAL PRIMARY KEY,
-    email       varchar(50) CHECK (person.email ~ '/^\\S+@\\S+\\.\\S+$/')
+    email       varchar(50) CHECK (person.email ~* '^\S+@\S+\.\S+$')
                                                 NOT NULL UNIQUE,
     password    VARCHAR(72)                     NOT NULL,
-    passport_id BIGINT REFERENCES passport (id) NOT NULL
+    passport_id BIGINT REFERENCES passport (id)
 );
 
 CREATE TABLE if not exists card_account
@@ -24,8 +25,9 @@ CREATE TABLE if not exists card_account
     id            BIGSERIAL PRIMARY KEY,
     money         DECIMAL     NOT NULL,
     iban          VARCHAR(28) NOT NULL,
-    number        VARCHAR(15) NOT NULL,
-    currency_type VARCHAR(10) NOT NULL
+    number        VARCHAR(16) NOT NULL,
+    currency_type VARCHAR(10) NOT NULL,
+    person_id     BIGINT REFERENCES person (id) NOT NULL
 );
 
 CREATE TABLE if not exists card
@@ -160,6 +162,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql
     SECURITY DEFINER;
+
+DROP FUNCTION IF EXISTS log_account_transaction(from_account BIGINT, to_account BIGINT, money_amount NUMERIC(10, 3));
 
 CREATE FUNCTION
     log_account_transaction(from_account BIGINT, to_account BIGINT, money_amount NUMERIC(10, 3))

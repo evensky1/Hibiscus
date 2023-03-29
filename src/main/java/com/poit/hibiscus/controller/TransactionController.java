@@ -1,8 +1,9 @@
 package com.poit.hibiscus.controller;
 
+import com.poit.hibiscus.dto.AccountTransactionDto;
 import com.poit.hibiscus.dto.AccountTransactionViewDto;
+import com.poit.hibiscus.dto.CardTransactionDto;
 import com.poit.hibiscus.dto.CardTransactionViewDto;
-import com.poit.hibiscus.dto.TransactionsDto;
 import com.poit.hibiscus.service.AccountTransactionService;
 import com.poit.hibiscus.service.CardTransactionService;
 import com.poit.hibiscus.service.UserService;
@@ -27,7 +28,7 @@ public class TransactionController {
     @PostMapping("cards")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void cardTransaction(
-        @RequestBody TransactionsDto.CardTransactionDto cardTransactionDto) {
+        @RequestBody CardTransactionDto cardTransactionDto) {
 
         cardTransactionService.insert(
             cardTransactionDto.fromCardId(),
@@ -38,7 +39,7 @@ public class TransactionController {
     @PostMapping("accounts")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void accountTransaction(
-        @RequestBody TransactionsDto.AccountTransactionDto accountTransactionDto)
+        @RequestBody AccountTransactionDto accountTransactionDto)
         throws InterruptedException {
 
         transactionService.insert(
