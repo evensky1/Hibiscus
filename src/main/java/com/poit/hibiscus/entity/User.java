@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "users")
+@Table(name = "person")
 @Getter
 @Setter
 @ToString
@@ -33,7 +33,7 @@ public class User {
     private Passport passport;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "person_id")
     private Set<Card> cards = new HashSet<>();
 
     @Override

@@ -1,30 +1,25 @@
-DROP TABLE IF EXISTS users, cards, card_accounts, holdings, credits, passports, sns, transactions, users;
+DROP TABLE IF EXISTS person, card, card_account, passport, card_transaction, account_transaction;
 
-CREATE TABLE if not exists sns
-(
-    id         BIGSERIAL PRIMARY KEY,
-    name       VARCHAR(255) NOT NULL,
-    surname    VARCHAR(255) NOT NULL,
-    succession VARCHAR(255) NOT NULL
-);
-CREATE TABLE if not exists passports
+CREATE TABLE if not exists passport
 (
     id            BIGSERIAL PRIMARY KEY,
-    dob           TIMESTAMP                  NOT NULL,
-    identity_code VARCHAR(14)                NOT NULL,
-    sns_id        BIGINT REFERENCES sns (id) NOT NULL
+    dob           TIMESTAMP    NOT NULL,
+    identity_code VARCHAR(14)  NOT NULL,
+    name          VARCHAR(255) NOT NULL,
+    surname       VARCHAR(255) NOT NULL,
+    succession    VARCHAR(255)
 );
 
-CREATE TABLE if not exists users
+CREATE TABLE if not exists person
 (
     id          BIGSERIAL PRIMARY KEY,
-    email       varchar(50) CHECK (users.email ~ '/^\\S+@\\S+\\.\\S+$/')
-                                                 NOT NULL UNIQUE,
-    password    VARCHAR(72)                      NOT NULL,
-    passport_id BIGINT REFERENCES passports (id) NOT NULL
+    email       varchar(50) CHECK (person.email ~ '/^\\S+@\\S+\\.\\S+$/')
+                                                NOT NULL UNIQUE,
+    password    VARCHAR(72)                     NOT NULL,
+    passport_id BIGINT REFERENCES passport (id) NOT NULL
 );
 
-CREATE TABLE if not exists card_accounts
+CREATE TABLE if not exists card_account
 (
     id            BIGSERIAL PRIMARY KEY,
     money         DECIMAL     NOT NULL,
@@ -33,36 +28,16 @@ CREATE TABLE if not exists card_accounts
     currency_type VARCHAR(10) NOT NULL
 );
 
-CREATE TABLE if not exists cards
+CREATE TABLE if not exists card
 (
     id              BIGSERIAL PRIMARY KEY,
-    pin             VARCHAR(4)                           NOT NULL,
-    number          VARCHAR(16)                          NOT NULL,
-    cvv             VARCHAR(3)                           NOT NULL,
+    pin             VARCHAR(4)                          NOT NULL,
+    number          VARCHAR(16)                         NOT NULL,
+    cvv             VARCHAR(3)                          NOT NULL,
     expiration_time TIMESTAMP CHECK (EXTRACT(YEAR FROM expiration_time)::int >
                                      EXTRACT(YEAR FROM current_timestamp)::int),
-    user_id         BIGINT REFERENCES users (id)         NOT NULL,
-    account_id      BIGINT REFERENCES card_accounts (id) NOT NULL
-);
-
-CREATE TABLE if not exists holdings
-(
-    id            BIGSERIAL PRIMARY KEY,
-    issuance_date TIMESTAMP  NOT NULL,
-    amount        DECIMAL    NOT NULL,
-    percentage    DECIMAL    NOT NULL,
-    currency_type VARCHAR(4) NOT NULL,
-    passport_id   BIGINT REFERENCES passports (id)
-);
-
-CREATE TABLE if not exists credits
-(
-    id            smallint PRIMARY KEY,
-    issuance_date TIMESTAMP  NOT NULL,
-    amount        DECIMAL    NOT NULL,
-    currency_type VARCHAR(4) NOT NULL,
-    passport_id   BIGINT     NOT NULL UNIQUE,
-    FOREIGN KEY (passport_id) REFERENCES passports (id)
+    person_id       BIGINT REFERENCES person (id)       NOT NULL,
+    account_id      BIGINT REFERENCES card_account (id) NOT NULL
 );
 
 CREATE TYPE currency_type AS ENUM (
@@ -70,7 +45,7 @@ CREATE TYPE currency_type AS ENUM (
     'USD',
     'RUB',
     'BYN'
-);
+    );
 
 CREATE TABLE IF NOT EXISTS account_transaction
 (
@@ -80,8 +55,8 @@ CREATE TABLE IF NOT EXISTS account_transaction
     amount          NUMERIC(10, 3)                                                         NOT NULL,
     currency        currency_type                                                          NOT NULL,
     being_at        TIMESTAMP DEFAULT now(),
-    FOREIGN KEY (from_account_id) REFERENCES card_accounts (id),
-    FOREIGN KEY (to_account_id) REFERENCES card_accounts (id)
+    FOREIGN KEY (from_account_id) REFERENCES card_account (id),
+    FOREIGN KEY (to_account_id) REFERENCES card_account (id)
 );
 
 CREATE TABLE IF NOT EXISTS card_transaction
@@ -92,24 +67,28 @@ CREATE TABLE IF NOT EXISTS card_transaction
     amount       NUMERIC(10, 3)                                                         NOT NULL,
     currency     currency_type                                                          NOT NULL,
     being_at     TIMESTAMP DEFAULT now(),
-    FOREIGN KEY (from_card_id) REFERENCES cards (id),
-    FOREIGN KEY (to_card_id) REFERENCES cards (id)
+    FOREIGN KEY (from_card_id) REFERENCES card (id),
+    FOREIGN KEY (to_card_id) REFERENCES card (id)
 );
-DROP FUNCTION IF EXISTS made_account_transaction(to_account_id bigint, from_account_id bigint, amount numeric(10, 3), currencies varchar);
+
+DROP FUNCTION IF EXISTS made_account_transaction(to_account_id bigint, from_account_id bigint,
+                                                 amount numeric(10, 3), currencies varchar);
 
 CREATE FUNCTION
-    made_account_transaction(to_account_id bigint, from_account_id bigint, amount numeric(10, 3), currencies varchar)
-    RETURNS boolean AS $$
+    made_account_transaction(to_account_id bigint, from_account_id bigint, amount numeric(10, 3),
+                             currencies varchar)
+    RETURNS boolean AS
+$$
 DECLARE
     from_account_currency_type currency_type;
-    to_account_currency_type currency_type;
-    from_account_currency numeric(10, 3);
-    to_account_currency numeric(10, 3);
-    money_var numeric(10, 3);
-    temp_amount numeric(10, 3);
-    USD constant text := 'USD';
+    to_account_currency_type   currency_type;
+    from_account_currency      numeric(10, 3);
+    to_account_currency        numeric(10, 3);
+    money_var                  numeric(10, 3);
+    temp_amount                numeric(10, 3);
+    USD constant               text := 'USD';
 BEGIN
-    SELECT money INTO money_var FROM card_accounts WHERE id = from_account_id;
+    SELECT money INTO money_var FROM card_account WHERE id = from_account_id;
 
     IF money_var < amount OR amount < 0 THEN
         RAISE EXCEPTION 'Not enough money to make a transaction in card' USING ERRCODE = 'P0001';
@@ -117,15 +96,19 @@ BEGIN
         RAISE EXCEPTION 'Reflection transaction is not allowed' USING ERRCODE = 'P0001';
     END IF;
 
-    SELECT currency_type INTO from_account_currency_type FROM card_accounts WHERE id = from_account_id;
-    SELECT currency_type INTO to_account_currency_type FROM card_accounts WHERE id = to_account_id;
+    SELECT currency_type
+    INTO from_account_currency_type
+    FROM card_account
+    WHERE id = from_account_id;
+    SELECT currency_type INTO to_account_currency_type FROM card_account WHERE id = to_account_id;
 
     IF from_account_currency_type = to_account_currency_type THEN
-        UPDATE card_accounts SET money = @money + amount WHERE id = to_account_id;
+        UPDATE card_account SET money = @money + amount WHERE id = to_account_id;
     ELSE
         IF from_account_currency_type::text NOT LIKE USD THEN
 
-            SELECT value INTO from_account_currency
+            SELECT value
+            INTO from_account_currency
             FROM (SELECT * FROM json_each(currencies::json)) AS "*2"
             WHERE key LIKE concat('%', from_account_currency_type::text);
 
@@ -134,7 +117,8 @@ BEGIN
             temp_amount := amount;
         END IF;
         IF to_account_currency_type::text != USD THEN
-            SELECT value INTO to_account_currency
+            SELECT value
+            INTO to_account_currency
             FROM (SELECT * FROM json_each(currencies::json)) AS "*2"
             WHERE key LIKE concat('%', to_account_currency_type::text);
             raise notice '%', to_account_currency;
@@ -142,51 +126,58 @@ BEGIN
             temp_amount := temp_amount * to_account_currency;
             raise notice '%', temp_amount;
         END IF;
-        UPDATE card_accounts SET money = @money + temp_amount WHERE id = to_account_id;
+        UPDATE card_account SET money = @money + temp_amount WHERE id = to_account_id;
     END IF;
 
-    UPDATE card_accounts SET money = @money - amount WHERE id = from_account_id;
+    UPDATE card_account SET money = @money - amount WHERE id = from_account_id;
 
     RETURN true;
 END;
 $$ LANGUAGE plpgsql
     SECURITY DEFINER;
 
-DROP FUNCTION IF EXISTS log_card_transaction(to_card BIGINT, from_card BIGINT, money_amount NUMERIC(10, 3));
+DROP FUNCTION IF EXISTS log_card_transaction(to_card BIGINT, from_card BIGINT,
+                                             money_amount NUMERIC(10, 3));
 
 CREATE FUNCTION
     log_card_transaction(from_card BIGINT, to_card BIGINT, money_amount NUMERIC(10, 3))
-    RETURNS boolean AS $$
-    DECLARE
-        curr_type currency_type;
-    BEGIN
+    RETURNS boolean AS
+$$
+DECLARE
+    curr_type currency_type;
+BEGIN
 
-        SELECT currency_type INTO curr_type FROM cards
-        JOIN card_accounts ca on ca.id = cards.account_id
-        WHERE cards.id = from_card;
+    SELECT currency_type
+    INTO curr_type
+    FROM card
+             JOIN card_account ca on ca.id = card.account_id
+    WHERE card.id = from_card;
 
-        INSERT INTO card_transaction(to_card_id, from_card_id, amount, currency)
-        VALUES (to_card, from_card, money_amount, curr_type);
+    INSERT INTO card_transaction(to_card_id, from_card_id, amount, currency)
+    VALUES (to_card, from_card, money_amount, curr_type);
 
-        RETURN true;
-    END;
-    $$ LANGUAGE plpgsql
+    RETURN true;
+END;
+$$ LANGUAGE plpgsql
     SECURITY DEFINER;
 
 CREATE FUNCTION
     log_account_transaction(from_account BIGINT, to_account BIGINT, money_amount NUMERIC(10, 3))
-    RETURNS boolean AS $$
-    DECLARE
-        curr_type currency_type;
-    BEGIN
+    RETURNS boolean AS
+$$
+DECLARE
+    curr_type currency_type;
+BEGIN
 
-        SELECT currency_type INTO curr_type FROM card_accounts
-        WHERE card_accounts.id = from_account;
+    SELECT currency_type
+    INTO curr_type
+    FROM card_account
+    WHERE card_account.id = from_account;
 
-        INSERT INTO account_transaction(to_account_id, from_account_id, amount, currency)
-        VALUES (to_account, from_account, money_amount, curr_type);
+    INSERT INTO account_transaction(to_account_id, from_account_id, amount, currency)
+    VALUES (to_account, from_account, money_amount, curr_type);
 
-        RETURN true;
-    END;
-    $$ LANGUAGE plpgsql
+    RETURN true;
+END;
+$$ LANGUAGE plpgsql
     SECURITY DEFINER;

@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "cards")
+@Table(name = "card")
 @Getter
 @Setter
 @ToString
@@ -31,7 +31,7 @@ public class Card {
     @Column(name = "expiration_time")
     private LocalDateTime expirationTime;
 
-    @Column(name = "user_id")
+    @Column(name = "person_id")
     private Long userId;
 
     @Column(name = "account_id")

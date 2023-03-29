@@ -29,7 +29,6 @@ public class AccountController {
         @AuthenticationPrincipal UserDetails userDetails) {
 
         var currentUser = userService.findUserByEmail(userDetails.getUsername());
-
         var newAccount = accountService.createAccount(
             conversionService.convert(accountDto, CardAccount.class), currentUser.getId()
         );

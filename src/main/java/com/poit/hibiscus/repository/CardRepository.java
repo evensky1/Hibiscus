@@ -16,14 +16,14 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     List<Card> getAllByUserId(Long id);
 
     @Query(value = """
-                    SELECT id FROM cards WHERE number = :number
+                    SELECT id FROM card WHERE number = :number
                     """, nativeQuery = true)
     Long findCardIdByCardNumber(@Param("number") String number);
 
     @Query(value = """
-                    SELECT currency_type FROM cards
-                    JOIN card_accounts ca on ca.id = cards.account_id
-                    WHERE cards.id = :id
+                    SELECT currency_type FROM card
+                    JOIN card_account ca on ca.id = card.account_id
+                    WHERE card.id = :id
                     """, nativeQuery = true)
     CurrencyType findCurrencyTypeById(@Param("id") Long id);
 }

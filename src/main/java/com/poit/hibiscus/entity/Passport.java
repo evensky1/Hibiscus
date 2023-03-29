@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "passports")
+@Table(name = "passport")
 @Getter
 @Setter
 @ToString
@@ -19,13 +19,18 @@ public class Passport {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "sns_id")
-    private SNS sns;
-
     @Column(name = "dob")
     private LocalDateTime dob;
 
     @Column(name = "identity_code")
     private String identityCode;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "surname")
+    private String surname;
+
+    @Column(name = "succession")
+    private String succession;
 }
