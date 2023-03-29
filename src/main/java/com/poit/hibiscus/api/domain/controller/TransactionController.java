@@ -3,7 +3,8 @@ package com.poit.hibiscus.api.domain.controller;
 import com.poit.hibiscus.dto.AccountTransactionViewDto;
 import com.poit.hibiscus.dto.CardTransactionViewDto;
 import com.poit.hibiscus.dto.TransactionsDto;
-import com.poit.hibiscus.service.TransactionsService;
+import com.poit.hibiscus.service.AccountTransactionService;
+import com.poit.hibiscus.service.CardTransactionService;
 import com.poit.hibiscus.service.UserService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +20,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("api/v1/transaction/")
 public class TransactionController {
 
-    private final TransactionsService.AccountTransactionService transactionService;
-    private final TransactionsService.CardTransactionService cardTransactionService;
+    private final AccountTransactionService transactionService;
+    private final CardTransactionService cardTransactionService;
     private final UserService userService;
     private final ConversionService conversionService;
 
