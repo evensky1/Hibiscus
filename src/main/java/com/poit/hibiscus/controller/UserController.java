@@ -6,7 +6,6 @@ import com.poit.hibiscus.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -32,13 +31,11 @@ public class UserController {
     }
 
     @GetMapping("passport")
-    public ResponseEntity<PassportDto> getPassport(
-        @AuthenticationPrincipal UserDetails userDetails
-    ) {
+    @ResponseStatus(HttpStatus.OK)
+    public PassportDto getPassport(@AuthenticationPrincipal UserDetails userDetails) {
+
         var currentUser = userService.findUserByEmail(userDetails.getUsername());
 
-        var passportDto = conversionService.convert(currentUser.getPassport(), PassportDto.class);
-
-        return new ResponseEntity<>(passportDto, HttpStatus.OK);
+        return conversionService.convert(currentUser.getPassport(), PassportDto.class);
     }
 }

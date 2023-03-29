@@ -10,7 +10,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -26,19 +25,19 @@ public class TransactionController {
     private final ConversionService conversionService;
 
     @PostMapping("cards")
-    public ResponseEntity<Void> cardTransaction(
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void cardTransaction(
         @RequestBody TransactionsDto.CardTransactionDto cardTransactionDto) {
 
         cardTransactionService.insert(
             cardTransactionDto.fromCardId(),
             cardTransactionDto.toCardNumber(),
             cardTransactionDto.amount());
-
-        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("accounts")
-    public ResponseEntity<Void> accountTransaction(
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void accountTransaction(
         @RequestBody TransactionsDto.AccountTransactionDto accountTransactionDto)
         throws InterruptedException {
 
@@ -46,12 +45,11 @@ public class TransactionController {
             accountTransactionDto.fromAccountId(),
             accountTransactionDto.toAccountNumber(),
             accountTransactionDto.amount());
-
-        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("cards")
-    public ResponseEntity<List<CardTransactionViewDto>> cardTransactions(
+    @ResponseStatus(HttpStatus.OK)
+    public List<CardTransactionViewDto> cardTransactions(
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         var currentUser = userService.findUserByEmail(userDetails.getUsername());
@@ -59,16 +57,14 @@ public class TransactionController {
         var transactionViews =
             cardTransactionService.findUserAttachedTransactions(currentUser.getId());
 
-        var transactionViewDtos =
-            transactionViews.stream()
-                .map(t -> conversionService.convert(t, CardTransactionViewDto.class))
-                .toList();
-
-        return new ResponseEntity<>(transactionViewDtos, HttpStatus.OK);
+        return transactionViews.stream()
+            .map(t -> conversionService.convert(t, CardTransactionViewDto.class))
+            .toList();
     }
 
     @GetMapping("accounts")
-    public ResponseEntity<List<AccountTransactionViewDto>> accountTransactions(
+    @ResponseStatus(HttpStatus.OK)
+    public List<AccountTransactionViewDto> accountTransactions(
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         var currentUser = userService.findUserByEmail(userDetails.getUsername());
@@ -76,10 +72,8 @@ public class TransactionController {
         var transactionViews =
             transactionService.findUserAttachedTransactions(currentUser.getId());
 
-        var transactionViewsDtos = transactionViews.stream()
+        return transactionViews.stream()
             .map(t -> conversionService.convert(t, AccountTransactionViewDto.class))
             .toList();
-
-        return new ResponseEntity<>(transactionViewsDtos, HttpStatus.OK);
     }
 }
