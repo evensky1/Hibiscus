@@ -1,6 +1,6 @@
 package com.poit.hibiscus.service.impl;
 
-import com.poit.hibiscus.api.domain.client.operation.CurrencyOperation;
+import com.poit.hibiscus.api.client.operation.CurrencyOperation;
 import com.poit.hibiscus.config.Transaction;
 import com.poit.hibiscus.config.TransactionType;
 import com.poit.hibiscus.entity.Transactions.CardTransaction;
@@ -10,7 +10,7 @@ import com.poit.hibiscus.repository.CardTransactionRepository;
 import com.poit.hibiscus.repository.model.CardTransactionView;
 import com.poit.hibiscus.service.AbstractQuotesService;
 import com.poit.hibiscus.service.CardService;
-import com.poit.hibiscus.service.TransactionsService;
+import com.poit.hibiscus.service.CardTransactionService;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.orm.jpa.JpaSystemException;
@@ -19,8 +19,9 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 
 @Service
-public class CardTransactionServiceImpl extends AbstractQuotesService implements
-    TransactionsService.CardTransactionService {
+public class CardTransactionServiceImpl
+    extends AbstractQuotesService
+    implements CardTransactionService {
 
     private final CardTransactionRepository cardTransactionRepository;
     private final CardService cardService;

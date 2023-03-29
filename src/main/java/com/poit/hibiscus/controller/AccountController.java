@@ -1,4 +1,4 @@
-package com.poit.hibiscus.api.domain.controller;
+package com.poit.hibiscus.controller;
 
 import com.poit.hibiscus.dto.AccountDto;
 import com.poit.hibiscus.entity.CardAccount;
@@ -9,7 +9,6 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -24,56 +23,52 @@ public class AccountController {
     private final UserService userService;
 
     @PostMapping("new")
-    public ResponseEntity<AccountDto> createAccount(
+    @ResponseStatus(HttpStatus.CREATED)
+    public AccountDto createAccount(
         @RequestBody AccountDto accountDto,
         @AuthenticationPrincipal UserDetails userDetails) {
 
         var currentUser = userService.findUserByEmail(userDetails.getUsername());
+        var cardAccount = conversionService.convert(accountDto, CardAccount.class);
+        var newAccount = accountService.createAccount(cardAccount, currentUser.getId());
 
-        var newAccount = accountService.createAccount(
-            conversionService.convert(accountDto, CardAccount.class), currentUser.getId()
-        );
-
-        return new ResponseEntity<>(
-            conversionService.convert(newAccount, AccountDto.class),
-            HttpStatus.CREATED);
+        return conversionService.convert(newAccount, AccountDto.class);
     }
 
     @GetMapping
-    public ResponseEntity<List<AccountDto>> getAccounts() {
-        return new ResponseEntity<>(
-            accountService.getAll().stream()
+    @ResponseStatus(HttpStatus.OK)
+    public List<AccountDto> getAccounts() {
+        return accountService.getAll().stream()
                 .map(a -> conversionService.convert(a, AccountDto.class))
-                .toList(),
-            HttpStatus.OK);
+                .toList();
     }
 
     @GetMapping("user-attached")
-    public ResponseEntity<List<AccountDto>> getAttachedAccounts(
+    @ResponseStatus(HttpStatus.OK)
+    public List<AccountDto> getAttachedAccounts(
         @AuthenticationPrincipal UserDetails userDetails) {
         var accounts = accountService.getAccountsByUserId(
                 userService.findUserByEmail(userDetails.getUsername()).getId());
 
-        return new ResponseEntity<>(
-            accounts.stream()
+        return accounts.stream()
                 .map(a -> conversionService.convert(a, AccountDto.class))
-                .toList(),
-            HttpStatus.OK);
+                .toList();
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> deleteAccount(@PathVariable("id") Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAccount(@PathVariable("id") Long id) {
         accountService.deleteAccount(id);
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("money/{id}/{amount}")
-    public ResponseEntity<AccountDto> addMoney(
+    @ResponseStatus(HttpStatus.OK)
+    public AccountDto addMoney(
         @PathVariable("id") Long id,
         @PathVariable("amount") BigDecimal amount
     ) {
         var currentAccount = accountService.addMoney(id, amount);
 
-        return new ResponseEntity<>(conversionService.convert(currentAccount, AccountDto.class), HttpStatus.ACCEPTED);
+        return conversionService.convert(currentAccount, AccountDto.class);
     }
 }

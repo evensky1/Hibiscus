@@ -1,7 +1,6 @@
 package com.poit.hibiscus.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.poit.hibiscus.entity.SNS;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat.ISO;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PassportDto {
+
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
@@ -24,5 +24,9 @@ public class PassportDto {
 
     private String identityCode;
 
-    private SNS sns;
+    private String name;
+
+    private String surname;
+
+    private String succession;
 }

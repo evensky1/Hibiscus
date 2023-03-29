@@ -20,12 +20,12 @@ public interface CardTransactionRepository extends JpaRepository<Transactions.Ca
                                    String currencies);
 
     @Query(value = """
-                SELECT account_id FROM cards WHERE number = :number
+                SELECT account_id FROM card WHERE number = :number
                     """, nativeQuery = true)
     Long findAccountIdByNumber(@Param("number") String number);
 
     @Query(value = """
-                SELECT account_id FROM cards WHERE id = :id
+                SELECT account_id FROM card WHERE id = :id
                 """, nativeQuery = true)
     Long findAccountIdById(@Param("id") Long id);
 

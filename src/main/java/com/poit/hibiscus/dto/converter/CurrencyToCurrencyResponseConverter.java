@@ -1,7 +1,7 @@
 package com.poit.hibiscus.dto.converter;
 
-import com.poit.hibiscus.api.domain.client.dto.CurrencyResponse;
-import com.poit.hibiscus.api.domain.client.model.Currency;
+import com.poit.hibiscus.api.client.dto.CurrencyResponse;
+import com.poit.hibiscus.api.client.model.Currency;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.core.convert.converter.Converter;

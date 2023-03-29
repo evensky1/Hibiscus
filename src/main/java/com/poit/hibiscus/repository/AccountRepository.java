@@ -23,17 +23,17 @@ public interface AccountRepository extends JpaRepository<CardAccount, Long> {
     void updateMoney(@Param("id") Long id, @Param("amount") BigDecimal amount);
 
     @Query(value = """
-                SELECT id FROM card_accounts WHERE number = :number
+                SELECT id FROM card_account WHERE number = :number
                 """, nativeQuery = true)
     Long findAccountIdByAccountNumber(@Param("number") String number);
 
     @Query(value = """
-                SELECT number FROM card_accounts WHERE id = :id
+                SELECT number FROM card_account WHERE id = :id
                 """, nativeQuery = true)
     String findAccountNumberByAccountId(@Param("id") Long id);
 
     @Query(value = """
-                SELECT currency_type FROM card_accounts WHERE id = :id
+                SELECT currency_type FROM card_account WHERE id = :id
                     """, nativeQuery = true)
     Currency findToAccountCurrencyById(@Param("id") Long id);
 

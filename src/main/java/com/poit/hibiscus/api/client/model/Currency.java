@@ -1,4 +1,4 @@
-package com.poit.hibiscus.api.domain.client.model;
+package com.poit.hibiscus.api.client.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -18,13 +18,14 @@ import java.util.Map;
 @NoArgsConstructor
 public class Currency {
     @Expose
-    @SerializedName("source")
-    private CurrencyType currency = CurrencyType.USD;
+    private CurrencyType source;
 
     @Expose
     private Map<CurrencyType, BigDecimal> quotes = new EnumMap<>(CurrencyType.class);
 
-    @Expose(serialize = false,
-            deserialize = false)
+    @Expose(
+        serialize = false,
+        deserialize = false
+    )
     private LocalDateTime currencyUpdatedAt = LocalDateTime.now();
 }

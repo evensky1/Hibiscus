@@ -17,15 +17,15 @@ fetch("/api/v1/users/passport")
   tempElem.after(newElem);
 
   newElem = document.createElement('p');
-  newElem.innerHTML = "Succession: " + passport.sns.succession;
+  newElem.innerHTML = "Succession: " + passport.succession;
   tempElem.after(newElem);
 
   newElem = document.createElement('p');
-  newElem.innerHTML = "Name: " + passport.sns.name;
+  newElem.innerHTML = "Name: " + passport.name;
   tempElem.after(newElem);
 
   newElem = document.createElement('p');
-  newElem.innerHTML = "Surname: " + passport.sns.surname;
+  newElem.innerHTML = "Surname: " + passport.surname;
   tempElem.after(newElem);
 });
 

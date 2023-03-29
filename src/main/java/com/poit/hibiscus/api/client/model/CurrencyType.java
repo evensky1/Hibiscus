@@ -1,4 +1,4 @@
-package com.poit.hibiscus.api.domain.client.model;
+package com.poit.hibiscus.api.client.model;
 
 public enum CurrencyType {
     USD,

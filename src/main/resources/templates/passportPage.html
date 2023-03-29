@@ -48,16 +48,13 @@
 
   function handleConfirm(event) {
     event.preventDefault();
-    var passport = {};
-    passport.identityCode = document.querySelector('input[name="identityCode"]').value;
-    passport.dob = document.querySelector('input[name="dateOfBirth"]').value + 'T00:00';
-
-    var sns = {};
-    sns.name = document.querySelector('input[name="name"]').value;
-    sns.surname = document.querySelector('input[name="surname"]').value;
-    sns.succession = document.querySelector('input[name="succession"]').value;
-
-    passport.sns = sns;
+    const passport = {
+      identityCode: document.querySelector('input[name="identityCode"]').value,
+      dob: document.querySelector('input[name="dateOfBirth"]').value + 'T00:00',
+      name: document.querySelector('input[name="name"]').value,
+      surname: document.querySelector('input[name="surname"]').value,
+      succession: document.querySelector('input[name="succession"]').value
+    }
 
     console.log(JSON.stringify(passport));
 
