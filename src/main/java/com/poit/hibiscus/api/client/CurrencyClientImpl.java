@@ -1,6 +1,6 @@
-package com.poit.hibiscus.api.domain.client;
+package com.poit.hibiscus.api.client;
 
-import com.poit.hibiscus.api.domain.client.model.Currency;
+import com.poit.hibiscus.api.client.model.Currency;
 import com.poit.hibiscus.config.ClientProperties;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;

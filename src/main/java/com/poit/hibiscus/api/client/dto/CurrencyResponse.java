@@ -1,6 +1,6 @@
-package com.poit.hibiscus.api.domain.client.dto;
+package com.poit.hibiscus.api.client.dto;
 
-import com.poit.hibiscus.api.domain.client.model.CurrencyType;
+import com.poit.hibiscus.api.client.model.CurrencyType;
 
 import java.math.BigDecimal;
 import java.time.Instant;

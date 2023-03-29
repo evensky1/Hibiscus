@@ -1,6 +1,6 @@
 package com.poit.hibiscus.service.impl;
 
-import com.poit.hibiscus.api.domain.client.operation.CurrencyOperation;
+import com.poit.hibiscus.api.client.operation.CurrencyOperation;
 import com.poit.hibiscus.config.Transaction;
 import com.poit.hibiscus.config.TransactionType;
 import com.poit.hibiscus.entity.Transactions.CardTransaction;

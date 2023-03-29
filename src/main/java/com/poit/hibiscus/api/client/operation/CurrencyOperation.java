@@ -1,7 +1,7 @@
-package com.poit.hibiscus.api.domain.client.operation;
+package com.poit.hibiscus.api.client.operation;
 
-import com.poit.hibiscus.api.domain.client.CurrencyClient;
-import com.poit.hibiscus.api.domain.client.model.Currency;
+import com.poit.hibiscus.api.client.CurrencyClient;
+import com.poit.hibiscus.api.client.model.Currency;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

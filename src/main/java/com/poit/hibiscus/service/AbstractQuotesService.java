@@ -1,7 +1,7 @@
 package com.poit.hibiscus.service;
 
 import com.google.gson.Gson;
-import com.poit.hibiscus.api.domain.client.operation.CurrencyOperation;
+import com.poit.hibiscus.api.client.operation.CurrencyOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

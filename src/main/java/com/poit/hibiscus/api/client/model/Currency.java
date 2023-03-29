@@ -1,4 +1,4 @@
-package com.poit.hibiscus.api.domain.client.model;
+package com.poit.hibiscus.api.client.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

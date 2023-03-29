@@ -1,4 +1,4 @@
-package com.poit.hibiscus.api.domain.controller;
+package com.poit.hibiscus.controller;
 
 import com.poit.hibiscus.dto.AccountTransactionViewDto;
 import com.poit.hibiscus.dto.CardTransactionViewDto;
