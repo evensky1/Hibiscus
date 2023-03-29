@@ -1,6 +1,5 @@
 package com.poit.hibiscus.error.factory.api.error.handler;
 
-import com.poit.hibiscus.entity.Card;
 import com.poit.hibiscus.error.factory.api.error.dto.ErrorResponse;
 import com.poit.hibiscus.error.factory.logic.operation.IErrorBuilder;
 import com.poit.hibiscus.error.factory.model.CardException;
