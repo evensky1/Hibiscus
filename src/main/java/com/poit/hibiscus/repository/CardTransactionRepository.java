@@ -1,8 +1,7 @@
 package com.poit.hibiscus.repository;
 
 import com.poit.hibiscus.entity.Card;
-import com.poit.hibiscus.entity.Transactions;
-import com.poit.hibiscus.entity.Transactions.CardTransaction;
+import com.poit.hibiscus.entity.CardTransaction;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public interface CardTransactionRepository extends JpaRepository<Transactions.CardTransaction, UUID> {
+public interface CardTransactionRepository extends JpaRepository<CardTransaction, UUID> {
     @Procedure(procedureName = "made_account_transaction")
     boolean madeAccountTransaction(long toAccountId,
                                    long fromAccountId,

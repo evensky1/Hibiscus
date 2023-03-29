@@ -3,7 +3,7 @@ package com.poit.hibiscus.service.impl;
 import com.poit.hibiscus.config.Transaction;
 
 import com.poit.hibiscus.config.TransactionType;
-import com.poit.hibiscus.entity.Transactions.AccountTransaction;
+import com.poit.hibiscus.entity.AccountTransaction;
 import com.poit.hibiscus.error.factory.configuration.HandleError;
 import com.poit.hibiscus.error.factory.model.TransactionDeniedException;
 import com.poit.hibiscus.repository.AccountTransactionRepository;

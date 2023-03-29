@@ -2,7 +2,7 @@ package com.poit.hibiscus.service.impl;
 
 import com.poit.hibiscus.config.Transaction;
 import com.poit.hibiscus.config.TransactionType;
-import com.poit.hibiscus.entity.Transactions.CardTransaction;
+import com.poit.hibiscus.entity.CardTransaction;
 import com.poit.hibiscus.error.factory.configuration.HandleError;
 import com.poit.hibiscus.error.factory.model.TransactionDeniedException;
 import com.poit.hibiscus.repository.CardTransactionRepository;
